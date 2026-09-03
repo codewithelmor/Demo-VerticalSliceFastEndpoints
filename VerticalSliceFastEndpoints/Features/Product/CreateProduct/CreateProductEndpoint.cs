@@ -16,6 +16,7 @@ public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequest, C
     {
         PreProcessor<PreProcessorLogging<CreateProductRequest>>();
         Post("/products");
+        Version(1);
         AllowAnonymous();
 
         Throttle(hitLimit: 20, durationSeconds: 60);

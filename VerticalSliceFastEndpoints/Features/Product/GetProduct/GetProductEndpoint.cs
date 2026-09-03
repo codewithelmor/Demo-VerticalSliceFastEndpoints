@@ -16,6 +16,7 @@ public class GetProductEndpoint : EndpointWithoutRequest<GetProductResponse>
     public override void Configure()
     {
         Get("/products/{id}");
+        Version(1);
         AllowAnonymous();
 
         Description(x => x

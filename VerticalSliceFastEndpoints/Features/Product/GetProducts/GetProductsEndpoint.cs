@@ -16,6 +16,7 @@ public class GetProductsEndpoint : Endpoint<GetProductsRequest, GetProductsRespo
     public override void Configure()
     {
         Get("/products");
+        Version(1);
         AllowAnonymous();
 
         Description(x => x

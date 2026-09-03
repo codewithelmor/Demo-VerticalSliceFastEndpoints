@@ -18,6 +18,7 @@ public class UpdateProductEndpoint : EndpointWithMapping<UpdateProductRequest, U
         PreProcessor<PreProcessorLogging<UpdateProductRequest>>();
         // {id} will bind automatically to the 'Id' property inside UpdateProductRequest
         Put("/products/{id}");
+        Version(1);
         AllowAnonymous();
 
         Throttle(hitLimit: 20, durationSeconds: 60);

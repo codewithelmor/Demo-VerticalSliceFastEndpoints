@@ -5,8 +5,22 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
 .AddFastEndpoints()
-.AddResponseCaching()
-.SwaggerDocument();
+.AddResponseCaching();
+
+// Configure the v1 Swagger Document (Filters endpoints to only show Version 1)
+builder.Services.SwaggerDocument(o =>
+{
+    o.MinEndpointVersion = 1;
+    o.MaxEndpointVersion = 1; // Strictly keeps out anything version 2 or higher
+    o.ShortSchemaNames = true;
+
+    o.DocumentSettings = s =>
+    {
+        s.Title = "Product API v1";
+        s.Version = "v1";
+        s.DocumentName = "v1"; // The URL slug will be /swagger/v1/swagger.json
+    };
+});
 
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -15,7 +29,12 @@ var app = builder.Build();
 
 app
     .UseResponseCaching()
-    .UseFastEndpoints()
+    .UseFastEndpoints(c =>
+    {
+        c.Endpoints.RoutePrefix = "api";     // Base route prefix -> /api
+        c.Versioning.Prefix = "v";           // Version number prefix -> v
+        c.Versioning.PrependToRoute = true;  // COMBINES THEM INTO: /api/v1/...
+    })
     .UseSwaggerGen();
 
 app.Run();

@@ -15,6 +15,7 @@ public class DeleteProductEndpoint : EndpointWithoutRequest
     public override void Configure()
     {
         Delete("/products/{id}");
+        Version(1);
         AllowAnonymous();
 
         Throttle(hitLimit: 20, durationSeconds: 60);
