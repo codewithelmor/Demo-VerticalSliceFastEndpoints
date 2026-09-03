@@ -1,7 +1,15 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VerticalSliceFastEndpoints.Data;
+using VerticalSliceFastEndpoints.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+
+builder.Services.AddDbContext<ApplicationDbContext>(option =>
+option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services
 .AddFastEndpoints()
@@ -21,9 +29,6 @@ builder.Services.SwaggerDocument(o =>
         s.DocumentName = "v1"; // The URL slug will be /swagger/v1/swagger.json
     };
 });
-
-builder.Services.AddDbContext<ApplicationDbContext>(option =>
-option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
