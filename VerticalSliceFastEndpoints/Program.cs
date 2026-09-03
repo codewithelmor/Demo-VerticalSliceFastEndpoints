@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using VerticalSliceFastEndpoints.Data;
 using VerticalSliceFastEndpoints.Entities;
 
@@ -31,6 +34,25 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["ApiSettings:Secret"]!)),
+            ValidateAudience = false,
+            ValidateIssuer = false
+        };
+    });
+builder.Services.AddAuthorization();
+
 builder.Services
 .AddFastEndpoints()
 .AddResponseCaching();
@@ -41,6 +63,9 @@ builder.Services.SwaggerDocument(o =>
     o.MinEndpointVersion = 1;
     o.MaxEndpointVersion = 1; // Strictly keeps out anything version 2 or higher
     o.ShortSchemaNames = true;
+
+    // FIX: Set this to 0 to disable automated URL routing folders entirely
+    o.AutoTagPathSegmentIndex = 0;
 
     o.DocumentSettings = s =>
     {
