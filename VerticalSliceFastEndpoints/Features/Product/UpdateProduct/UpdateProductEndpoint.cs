@@ -24,6 +24,7 @@ public class UpdateProductEndpoint : EndpointWithMapping<UpdateProductRequest, U
         Throttle(hitLimit: 20, durationSeconds: 60);
 
         Description(x => x
+            .WithTags("Products")
             .Produces<UpdateProductResponse>(201)
             .ProducesProblem(400));
     }

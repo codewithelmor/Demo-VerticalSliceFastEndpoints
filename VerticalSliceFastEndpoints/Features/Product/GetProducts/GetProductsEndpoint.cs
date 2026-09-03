@@ -20,6 +20,7 @@ public class GetProductsEndpoint : Endpoint<GetProductsRequest, GetProductsRespo
         AllowAnonymous();
 
         Description(x => x
+            .WithTags("Products")
             .Produces<GetProductsResponse>(200)
             .ProducesProblem(400));
     }

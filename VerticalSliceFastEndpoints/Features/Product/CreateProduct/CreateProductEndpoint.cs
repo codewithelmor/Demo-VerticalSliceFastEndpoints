@@ -22,6 +22,7 @@ public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequest, C
         Throttle(hitLimit: 20, durationSeconds: 60);
 
         Description(x => x
+            .WithTags("Products")
             .Produces<CreateProductResponse>(201)
             .ProducesProblem(400));
     }

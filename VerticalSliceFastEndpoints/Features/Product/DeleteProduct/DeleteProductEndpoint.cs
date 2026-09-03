@@ -21,6 +21,7 @@ public class DeleteProductEndpoint : EndpointWithoutRequest
         Throttle(hitLimit: 20, durationSeconds: 60);
 
         Description(x => x
+            .WithTags("Products")
             .Produces(204) // No Content
             .ProducesProblem(404));
     }
