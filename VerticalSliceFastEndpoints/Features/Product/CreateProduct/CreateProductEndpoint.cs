@@ -1,9 +1,17 @@
-using VerticalSliceFastEndpoints.Entities;
+using VerticalSliceFastEndpoints.Data;
+using Entity = VerticalSliceFastEndpoints.Entities.Product;
 
 namespace Features.Product.CreateProduct;
 
-public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequest, CreateProductResponse, Product>
+public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequest, CreateProductResponse, Entity>
 {
+    private readonly ApplicationDbContext _context;
+
+    public CreateProductEndpoint(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
     public override void Configure()
     {
         PreProcessor<PreProcessorLogging<CreateProductRequest>>();
@@ -19,19 +27,27 @@ public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequest, C
 
     public override async Task HandleAsync(CreateProductRequest req, CancellationToken ct)
     {
-        var Product = MapToEntity(req);
-        var response = MapFromEntity(Product);
+        // 1. Map request DTO to your Product domain entity
+        var product = MapToEntity(req);
 
-        await Send.CreatedAtAsync("/products/{id}", new { id = Product.Id }, response, cancellation: ct);
+        // 2. Add the product to the DbContext and save changes to the database
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync(ct);
+
+        // 3. Map the saved entity back to the response DTO
+        var response = MapFromEntity(product);
+
+        // 4. Return HTTP 201 Created with the location header
+        await Send.CreatedAtAsync("/products/{id}", new { id = response.Id }, response, cancellation: ct);
     }
 
-    public override Product MapToEntity(CreateProductRequest req)
+    public override Entity MapToEntity(CreateProductRequest req)
     {
-        return new Product(req.Title, req.Description);
+        return new Entity(req.Title, req.Description);
     }
     
-    public override CreateProductResponse MapFromEntity(Product entity)
+    public override CreateProductResponse MapFromEntity(Entity entity)
     {
-        return new CreateProductResponse { Id = entity.Id };
+        return new CreateProductResponse { Id = entity.Id, Title = entity.Title, Description = entity.Description, CreatedDate = entity.CreatedDate, UpdatedDate = entity.UpdatedDate };
     }
 }
