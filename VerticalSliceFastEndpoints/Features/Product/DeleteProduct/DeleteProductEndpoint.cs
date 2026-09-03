@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using VerticalSliceFastEndpoints;
 using VerticalSliceFastEndpoints.Data;
 
 namespace Features.Product.DeleteProduct;
@@ -16,7 +17,14 @@ public class DeleteProductEndpoint : EndpointWithoutRequest
     {
         Delete("/products/{id}");
         Version(1);
-        AllowAnonymous();
+        //AllowAnonymous();
+
+        // 1. Remove AllowAnonymous(); and enforce JWT Bearer validation
+        // (This requires an "Authorization: Bearer <token>" header)
+        // AuthSchemes("Bearer"); // Optional: Use only if you have multiple schemas configured
+
+        // 2. Enforce Role Authorization
+        Roles(SD.Role_Admin); // Add the specific roles allowed to access this slice
 
         Throttle(hitLimit: 20, durationSeconds: 60);
 
