@@ -1,8 +1,8 @@
-namespace Features.Category.CreateCategory;
+namespace Features.Product.CreateProduct;
 
-public class CreateCategoryValidation : Validator<CreateCategoryRequest>
+public class CreateProductValidation : Validator<CreateProductRequest>
 {
-    public CreateCategoryValidation()
+    public CreateProductValidation()
     {
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Title is required.")

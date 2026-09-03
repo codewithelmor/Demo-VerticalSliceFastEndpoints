@@ -1,6 +1,6 @@
-namespace  Features.Category.CreateCategory;
+namespace  Features.Product.CreateProduct;
 
-public class CreateCategoryRequest
+public class CreateProductRequest
 {
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
