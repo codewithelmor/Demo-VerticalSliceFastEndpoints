@@ -94,6 +94,22 @@ builder.Services.OpenApiDocument(options =>
 
     options.MinEndpointVersion = 1;
     options.MaxEndpointVersion = 1;
+}).OpenApiDocument(options =>
+{
+    options.DocumentName = "v2";
+    options.Title = "Product API v2";
+    options.Version = "v2";
+
+    options.ShortSchemaNames = true;
+
+    // Disable automatic route-segment tagging
+    options.AutoTagPathSegmentIndex = 0;
+
+    // Automatically add JWT Bearer authentication
+    options.EnableJWTBearerAuth = true;
+
+    options.MinEndpointVersion = 2;
+    options.MaxEndpointVersion = 2;
 });
 
 var app = builder.Build();
@@ -118,6 +134,10 @@ app.MapScalarApiReference(options =>
             "v1",
             "Product API v1",
             "/openapi/v1.json"
+        ).AddDocument(
+            "v2",
+            "Product API v2",
+            "/openapi/v2.json"
         );
 });
 
