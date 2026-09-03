@@ -11,6 +11,26 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin();
+        policy.AllowAnyMethod();
+        policy.AllowAnyHeader();
+    });
+
+    options.AddPolicy("RestrictedPolicy", policy =>
+    {
+        policy.WithOrigins(
+                "https://myfrontend.com",
+                "https://admin.myfrontend.com"
+            )
+            .WithMethods("GET", "POST")
+            .WithHeaders("Content-Type", "Authorization");
+    });
+});
+
 builder.Services
 .AddFastEndpoints()
 .AddResponseCaching();
