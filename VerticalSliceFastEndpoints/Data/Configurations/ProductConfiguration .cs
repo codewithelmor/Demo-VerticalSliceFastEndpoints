@@ -33,6 +33,21 @@ namespace VerticalSliceFastEndpoints.Data.Configurations
 
             // Optional: Filter out soft-deleted items by default
             builder.HasQueryFilter(p => p.DeletedDate == null);
+
+            builder.HasOne(p => p.CreatedByUser)        // Product has one User
+                .WithMany()                          // User can have many Products
+                .HasForeignKey(p => p.CreatedByUserId) // Foreign Key definition
+                .OnDelete(DeleteBehavior.Restrict);   // Prevents cascading deletes if a user is deleted
+
+            builder.HasOne(p => p.UpdatedByUser)        // Product has one User
+                .WithMany()                          // User can have many Products
+                .HasForeignKey(p => p.UpdatedByUserId) // Foreign Key definition
+                .OnDelete(DeleteBehavior.Restrict);   // Prevents cascading deletes if a user is deleted
+
+            builder.HasOne(p => p.DeletedByUser)        // Product has one User
+                .WithMany()                          // User can have many Products
+                .HasForeignKey(p => p.DeletedByUserId) // Foreign Key definition
+                .OnDelete(DeleteBehavior.Restrict);   // Prevents cascading deletes if a user is deleted
         }
     }
 }
