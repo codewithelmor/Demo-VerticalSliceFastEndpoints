@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using VerticalSliceFastEndpoints;
 using VerticalSliceFastEndpoints.Data;
 
@@ -39,6 +40,9 @@ public class DeleteProductEndpoint : EndpointWithoutRequest
         // Extract the {id} parameter safely directly from the route path
         var id = Route<Guid>("id");
 
+        // Standard ASP.NET Core approach
+        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
         // 1. Fetch the product using the extracted ID
         var product = await _context.Products
             .FirstOrDefaultAsync(p => p.Id == id, ct);
@@ -52,6 +56,7 @@ public class DeleteProductEndpoint : EndpointWithoutRequest
 
         // 3. Apply soft-delete timestamp instead of calling _context.Products.Remove(product)
         product.DeletedDate = DateTime.UtcNow;
+        product.DeletedByUserId = userId;
 
         // 4. Persist changes to the database
         await _context.SaveChangesAsync(ct);
