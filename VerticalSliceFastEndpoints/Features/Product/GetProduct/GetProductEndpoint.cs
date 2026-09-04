@@ -49,8 +49,8 @@ public class GetProductEndpoint : EndpointWithoutRequest<GetProductResponse>
             Id = product.Id,
             Title = product.Title,
             Description = product.Description,
-            CreatedDate = product.CreatedDate,
-            UpdatedDate = product.UpdatedDate
+            FileContent = Convert.ToBase64String(product.ImageContent ?? new byte[0]),
+            FileName = product.ImageFileName
         };
 
         // 4. Returns HTTP 200 with the response object in the body

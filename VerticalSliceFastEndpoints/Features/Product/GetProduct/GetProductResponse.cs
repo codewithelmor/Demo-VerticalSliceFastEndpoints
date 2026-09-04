@@ -5,7 +5,7 @@
         public Guid Id { get; set; }
         public string Title { get; set; } = default!;
         public string Description { get; set; } = default!;
-        public DateTime CreatedDate { get; set; }
-        public DateTime? UpdatedDate { get; set; }
+        public string? FileName { get; set; } = string.Empty;
+        public string? FileContent { get; set; } = string.Empty;
     }
 }
