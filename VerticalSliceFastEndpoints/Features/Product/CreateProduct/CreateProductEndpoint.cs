@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using VerticalSliceFastEndpoints;
 using VerticalSliceFastEndpoints.Data;
 using Entity = VerticalSliceFastEndpoints.Entities.Product;
@@ -53,11 +54,14 @@ public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequest, C
 
     public override Entity MapToEntity(CreateProductRequest req)
     {
-        return new Entity(req.Title, req.Description);
+        // Standard ASP.NET Core approach
+        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+        return new Entity(req.Title, req.Description, createdByUserId: userId);
     }
     
     public override CreateProductResponse MapFromEntity(Entity entity)
     {
-        return new CreateProductResponse { Id = entity.Id, Title = entity.Title, Description = entity.Description, CreatedDate = entity.CreatedDate, UpdatedDate = entity.UpdatedDate };
+        return new CreateProductResponse { Id = entity.Id, Title = entity.Title, Description = entity.Description };
     }
 }
