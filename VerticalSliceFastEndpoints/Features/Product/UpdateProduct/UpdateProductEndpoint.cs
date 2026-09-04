@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using VerticalSliceFastEndpoints;
 using VerticalSliceFastEndpoints.Data;
 using Entity = VerticalSliceFastEndpoints.Entities.Product;
@@ -70,11 +71,14 @@ public class UpdateProductEndpoint : EndpointWithMapping<UpdateProductRequest, U
 
     public override Entity MapToEntity(UpdateProductRequest req)
     {
-        return new Entity(req.Title, req.Description);
+        // Standard ASP.NET Core approach
+        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+        return new Entity(req.Title, req.Description, updatedByUserId: userId);
     }
     
     public override UpdateProductResponse MapFromEntity(Entity entity)
     {
-        return new UpdateProductResponse { Id = entity.Id, Title = entity.Title, Description = entity.Description, CreatedDate = entity.CreatedDate, UpdatedDate = entity.UpdatedDate };
+        return new UpdateProductResponse { Id = entity.Id, Title = entity.Title, Description = entity.Description };
     }
 }
