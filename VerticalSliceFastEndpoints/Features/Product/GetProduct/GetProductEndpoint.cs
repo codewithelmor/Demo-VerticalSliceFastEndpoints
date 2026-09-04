@@ -21,6 +21,7 @@ public class GetProductEndpoint : EndpointWithoutRequest<GetProductResponse>
 
         Description(x => x
             .WithTags("Products")
+            .WithDescription("Get a single product by its ID.")
             .Produces<GetProductResponse>(200)
             .ProducesProblem(404));
     }

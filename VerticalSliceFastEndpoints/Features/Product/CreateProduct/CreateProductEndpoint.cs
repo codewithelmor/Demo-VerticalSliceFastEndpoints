@@ -32,6 +32,7 @@ public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequest, C
 
         Description(x => x
             .WithTags("Products")
+            .WithDescription("Creates a new product in the system.")
             .Produces<CreateProductResponse>(201)
             .ProducesProblem(400));
     }

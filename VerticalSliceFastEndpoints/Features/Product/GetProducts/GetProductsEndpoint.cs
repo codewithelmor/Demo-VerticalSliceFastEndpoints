@@ -21,6 +21,7 @@ public class GetProductsEndpoint : Endpoint<GetProductsRequest, GetProductsRespo
 
         Description(x => x
             .WithTags("Products")
+            .WithDescription("Retrieves a paginated list of products from the database.")
             .Produces<GetProductsResponse>(200)
             .ProducesProblem(400));
     }

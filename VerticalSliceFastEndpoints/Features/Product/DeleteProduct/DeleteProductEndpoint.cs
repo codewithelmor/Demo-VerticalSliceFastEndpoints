@@ -31,6 +31,7 @@ public class DeleteProductEndpoint : EndpointWithoutRequest
 
         Description(x => x
             .WithTags("Products")
+            .WithDescription("Deletes a product by its ID. This is a soft delete operation.")
             .Produces(204) // No Content
             .ProducesProblem(404));
     }

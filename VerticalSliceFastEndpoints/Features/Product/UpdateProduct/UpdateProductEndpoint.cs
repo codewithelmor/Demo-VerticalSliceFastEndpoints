@@ -34,6 +34,7 @@ public class UpdateProductEndpoint : EndpointWithMapping<UpdateProductRequest, U
 
         Description(x => x
             .WithTags("Products")
+            .WithDescription("Update an existing product by its ID. Requires Admin role.")
             .Produces<UpdateProductResponse>(201)
             .ProducesProblem(400));
     }
