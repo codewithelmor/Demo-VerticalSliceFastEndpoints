@@ -244,6 +244,19 @@ namespace VerticalSliceFastEndpoints.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<byte[]>("ImageContent")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("ImageFileName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ImageUploadedByUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("ImageUploadedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -260,6 +273,8 @@ namespace VerticalSliceFastEndpoints.Migrations
                     b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("DeletedByUserId");
+
+                    b.HasIndex("ImageUploadedByUserId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -330,6 +345,11 @@ namespace VerticalSliceFastEndpoints.Migrations
                         .HasForeignKey("DeletedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("VerticalSliceFastEndpoints.Entities.ApplicationUser", "ImageUploadedByUser")
+                        .WithMany()
+                        .HasForeignKey("ImageUploadedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("VerticalSliceFastEndpoints.Entities.ApplicationUser", "UpdatedByUser")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId")
@@ -338,6 +358,8 @@ namespace VerticalSliceFastEndpoints.Migrations
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("DeletedByUser");
+
+                    b.Navigation("ImageUploadedByUser");
 
                     b.Navigation("UpdatedByUser");
                 });

@@ -21,6 +21,10 @@ namespace VerticalSliceFastEndpoints.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(100);
 
+            // Configure ImageFileName with a max length of 50 and make it optional
+            builder.Property(p => p.ImageFileName)
+                .HasMaxLength(50);
+
             // Ensure dates are mapped correctly
             builder.Property(p => p.CreatedDate)
                 .IsRequired();
@@ -47,6 +51,11 @@ namespace VerticalSliceFastEndpoints.Data.Configurations
             builder.HasOne(p => p.DeletedByUser)        // Product has one User
                 .WithMany()                          // User can have many Products
                 .HasForeignKey(p => p.DeletedByUserId) // Foreign Key definition
+                .OnDelete(DeleteBehavior.Restrict);   // Prevents cascading deletes if a user is deleted
+
+            builder.HasOne(p => p.ImageUploadedByUser)        // Product has one User
+                .WithMany()                          // User can have many Products
+                .HasForeignKey(p => p.ImageUploadedByUserId) // Foreign Key definition
                 .OnDelete(DeleteBehavior.Restrict);   // Prevents cascading deletes if a user is deleted
         }
     }
