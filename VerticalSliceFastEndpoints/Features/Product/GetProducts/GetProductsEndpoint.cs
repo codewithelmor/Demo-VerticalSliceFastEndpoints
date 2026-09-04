@@ -39,8 +39,8 @@ public class GetProductsEndpoint : Endpoint<GetProductsRequest, GetProductsRespo
                 Id = p.Id,
                 Title = p.Title,
                 Description = p.Description,
-                CreatedDate = p.CreatedDate,
-                UpdatedDate = p.UpdatedDate
+                FileContent = Convert.ToBase64String(p.ImageContent ?? new byte[0]),
+                FileName = p.ImageFileName
             })
             .ToListAsync(ct);
 
