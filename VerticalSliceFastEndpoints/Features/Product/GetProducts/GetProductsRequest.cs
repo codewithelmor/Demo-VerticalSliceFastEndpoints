@@ -1,4 +1,4 @@
-﻿namespace VerticalSliceFastEndpoints.Features.Product.GetProducts
+﻿namespace Features.Product.GetProducts
 {
     public class GetProductsRequest
     {

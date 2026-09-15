@@ -1,4 +1,4 @@
-﻿namespace VerticalSliceFastEndpoints.Features.User.GetUsers
+﻿namespace Features.User.GetUsers
 {
     public class GetUsersRequest
     {
