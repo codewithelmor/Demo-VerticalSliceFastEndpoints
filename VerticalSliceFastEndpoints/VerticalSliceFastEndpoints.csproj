@@ -9,6 +9,7 @@
   <ItemGroup>
     <!--<PackageReference Include="Asp.Versioning.Http" Version="10.2.3" />-->
     <!--<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="10.2.1" />-->
+    <PackageReference Include="Dapper" Version="2.1.86" />
     <PackageReference Include="FastEndpoints" Version="8.3.0" />
     <PackageReference Include="FastEndpoints.OpenApi" Version="8.3.0" />
     <!--<PackageReference Include="FastEndpoints.Swagger" Version="8.3.0" />-->
