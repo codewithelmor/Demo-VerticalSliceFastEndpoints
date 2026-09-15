@@ -21,7 +21,6 @@ The API includes JWT-based authentication and role-based authorization (via ASP.
 ```text
 VerticalSliceFastEndpoints/
 ├── VerticalSliceFastEndpoints
-│   ├── bin
 │   ├── Data
 │   │   ├── Configurations
 │   │   │   └── ProductConfiguration.cs
