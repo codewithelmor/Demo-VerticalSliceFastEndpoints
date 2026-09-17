@@ -1,6 +1,6 @@
 ﻿namespace VerticalSliceFastEndpoints.Features.Auth.Login
 {
-    public class LoginValidation : Validator<LoginRequest>
+    public class LoginValidation : Validator<LoginRequestDto>
     {
         public LoginValidation()
         {

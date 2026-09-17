@@ -4,7 +4,7 @@ using VerticalSliceFastEndpoints.Features.Product.GetProducts;
 
 namespace Features.Product.GetProducts;
 
-public class GetProductsEndpoint : Endpoint<GetProductsRequest, GetProductsResponse>
+public class GetProductsEndpoint : Endpoint<GetProductsRequestDto, GetProductsResponse>
 {
     private readonly ApplicationDbContext _context;
 
@@ -26,7 +26,7 @@ public class GetProductsEndpoint : Endpoint<GetProductsRequest, GetProductsRespo
             .ProducesProblem(400));
     }
 
-    public override async Task HandleAsync(GetProductsRequest req, CancellationToken ct)
+    public override async Task HandleAsync(GetProductsRequestDto req, CancellationToken ct)
     {
         // 1. Query the database with pagination bounds
         var items = await _context.Products
@@ -34,7 +34,7 @@ public class GetProductsEndpoint : Endpoint<GetProductsRequest, GetProductsRespo
             .OrderByDescending(p => p.CreatedDate)
             .Skip((req.PageNumber - 1) * req.PageSize)
             .Take(req.PageSize)
-            .Select(p => new ProductItemResponse
+            .Select(p => new ProductItemResponseDto
             {
                 Id = p.Id,
                 Title = p.Title,

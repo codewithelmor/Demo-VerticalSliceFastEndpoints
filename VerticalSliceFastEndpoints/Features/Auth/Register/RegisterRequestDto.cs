@@ -1,7 +1,9 @@
 ﻿namespace VerticalSliceFastEndpoints.Features.Auth.Register
 {
-    public class RegisterRequest
+    public class RegisterRequestDto
     {
+        public RegisterRequestDto() { }
+
         public string Email { get; set; } = default!;
         public string Password { get; set; } = default!; // NOTE: For demo only - NOT encrypted
 

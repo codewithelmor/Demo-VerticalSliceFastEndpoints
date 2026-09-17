@@ -6,7 +6,7 @@ using Entity = VerticalSliceFastEndpoints.Entities.Product;
 
 namespace Features.Product.UpdateProduct;
 
-public class UpdateProductEndpoint : EndpointWithMapping<UpdateProductRequest, UpdateProductResponse, Entity>
+public class UpdateProductEndpoint : EndpointWithMapping<UpdateProductRequestDto, UpdateProductResponseDto, Entity>
 {
     private readonly ApplicationDbContext _context;
 
@@ -17,8 +17,8 @@ public class UpdateProductEndpoint : EndpointWithMapping<UpdateProductRequest, U
 
     public override void Configure()
     {
-        PreProcessor<PreProcessorLogging<UpdateProductRequest>>();
-        // {id} will bind automatically to the 'Id' property inside UpdateProductRequest
+        PreProcessor<PreProcessorLogging<UpdateProductRequestDto>>();
+        // {id} will bind automatically to the 'Id' property inside UpdateProductRequestDto
         Put("/products/{id}");
         Version(1);
         //AllowAnonymous();
@@ -35,11 +35,11 @@ public class UpdateProductEndpoint : EndpointWithMapping<UpdateProductRequest, U
         Description(x => x
             .WithTags("Products")
             .WithDescription("Update an existing product by its ID. Requires Admin role.")
-            .Produces<UpdateProductResponse>(201)
+            .Produces<UpdateProductResponseDto>(201)
             .ProducesProblem(400));
     }
 
-    public override async Task HandleAsync(UpdateProductRequest req, CancellationToken ct)
+    public override async Task HandleAsync(UpdateProductRequestDto req, CancellationToken ct)
     {
         // Extract the {id} parameter safely directly from the route path
         var id = Route<Guid>("id");
@@ -70,7 +70,7 @@ public class UpdateProductEndpoint : EndpointWithMapping<UpdateProductRequest, U
         await Send.OkAsync(response, ct);
     }
 
-    public override Entity MapToEntity(UpdateProductRequest req)
+    public override Entity MapToEntity(UpdateProductRequestDto req)
     {
         // Standard ASP.NET Core approach
         string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -78,8 +78,8 @@ public class UpdateProductEndpoint : EndpointWithMapping<UpdateProductRequest, U
         return new Entity(req.Title, req.Description, updatedByUserId: userId);
     }
     
-    public override UpdateProductResponse MapFromEntity(Entity entity)
+    public override UpdateProductResponseDto MapFromEntity(Entity entity)
     {
-        return new UpdateProductResponse { Id = entity.Id, Title = entity.Title, Description = entity.Description };
+        return new UpdateProductResponseDto { Id = entity.Id, Title = entity.Title, Description = entity.Description };
     }
 }

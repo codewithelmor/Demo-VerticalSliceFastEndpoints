@@ -6,7 +6,7 @@ using VerticalSliceFastEndpoints.Features.User.GetUsers;
 
 namespace Features.User.GetUser;
 
-public class GetUserEndpoint : EndpointWithoutRequest<GetUserResponse>
+public class GetUserEndpoint : EndpointWithoutRequest<GetUserResponseDto>
 {
     private readonly string _connectionString;
 
@@ -25,7 +25,7 @@ public class GetUserEndpoint : EndpointWithoutRequest<GetUserResponse>
         Description(x => x
             .WithTags("Users")
             .WithDescription("Get a single User by its ID.")
-            .Produces<GetUserResponse>(200)
+            .Produces<GetUserResponseDto>(200)
             .ProducesProblem(404));
     }
 
@@ -55,14 +55,14 @@ public class GetUserEndpoint : EndpointWithoutRequest<GetUserResponse>
         using IDbConnection db = new SqlConnection(_connectionString);
 
         // Dictionary to track and merge user rows with multiple roles
-        var userDictionary = new Dictionary<string, GetUserResponse>();
+        var userDictionary = new Dictionary<string, GetUserResponseDto>();
 
         // Dapper Multi-Mapping: This processes rows where columns belong to different data types.
-        // <GetUserResponse, string, int, GetUserResponse> means:
-        //   1st Type (GetUserResponse): Input object representing the user columns.
+        // <GetUserResponseDto, string, int, GetUserResponseDto> means:
+        //   1st Type (GetUserResponseDto): Input object representing the user columns.
         //   2nd Type (string): Input item representing the RoleName column.
-        //   3rd Type (GetUserResponse): The final merged object returned by this function.
-        await db.QueryAsync<GetUserResponse, string, GetUserResponse>(
+        //   3rd Type (GetUserResponseDto): The final merged object returned by this function.
+        await db.QueryAsync<GetUserResponseDto, string, GetUserResponseDto>(
             sql,
             // This lambda function runs automatically for EVERY single row returned by SQL.
             (user, roleName) =>
@@ -91,7 +91,7 @@ public class GetUserEndpoint : EndpointWithoutRequest<GetUserResponse>
             // Pass parameters to the SQL script safely to prevent SQL injection vulnerabilities.
             param: new { Id = id },
             // Crucial: Tells Dapper where to cut off columns in the SQL result grid.
-            // Everything before "RoleName" belongs to the UserItemResponse object.
+            // Everything before "RoleName" belongs to the UserItemResponseDto object.
             splitOn: "RoleName"
         );
 

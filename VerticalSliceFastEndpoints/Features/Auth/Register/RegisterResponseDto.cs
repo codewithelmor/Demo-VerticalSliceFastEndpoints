@@ -1,10 +1,10 @@
 ﻿using System.Net;
 
-namespace VerticalSliceFastEndpoints.Features.Auth.Login
+namespace VerticalSliceFastEndpoints.Features.Auth.Register
 {
-    public class LoginResponse
+    public class RegisterResponseDto
     {
-        public LoginResponse()
+        public RegisterResponseDto()
         {
 
             ErrorMessages = [];

@@ -2,7 +2,9 @@
 {
     public class GetProductsResponse
     {
-        public IReadOnlyCollection<ProductItemResponse> Items { get; set; } = Array.Empty<ProductItemResponse>();
+        public GetProductsResponse() { }
+
+        public List<ProductItemResponseDto> Items { get; set; } = new();
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
         public int TotalCount { get; set; }

@@ -1,6 +1,6 @@
 namespace Features.Product.CreateProduct;
 
-public class CreateProductValidation : Validator<CreateProductRequest>
+public class CreateProductValidation : Validator<CreateProductRequestDto>
 {
     public CreateProductValidation()
     {

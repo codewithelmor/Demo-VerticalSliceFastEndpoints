@@ -1,6 +1,6 @@
 ﻿namespace Features.User.GetUsers;
 
-public class GetUsersValidation : Validator<GetUsersRequest>
+public class GetUsersValidation : Validator<GetUsersRequestDto>
 {
     public GetUsersValidation()
     {

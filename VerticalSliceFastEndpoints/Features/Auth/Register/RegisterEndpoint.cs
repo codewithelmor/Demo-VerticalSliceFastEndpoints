@@ -4,7 +4,7 @@ using VerticalSliceFastEndpoints.Entities;
 
 namespace VerticalSliceFastEndpoints.Features.Auth.Register
 {
-    public class RegisterEndpoint : Endpoint<RegisterRequest, RegisterResponse>
+    public class RegisterEndpoint : Endpoint<RegisterRequestDto, RegisterResponseDto>
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -22,17 +22,17 @@ namespace VerticalSliceFastEndpoints.Features.Auth.Register
             AllowAnonymous();
             Description(x => x
                 .WithTags("Authentication")
-                .Produces<RegisterResponse>(200)
-                .Produces<RegisterResponse>(400)
-                .Produces<RegisterResponse>(404));
+                .Produces<RegisterResponseDto>(200)
+                .Produces<RegisterResponseDto>(400)
+                .Produces<RegisterResponseDto>(404));
         }
 
-        public override async Task HandleAsync(RegisterRequest req, CancellationToken ct)
+        public override async Task HandleAsync(RegisterRequestDto req, CancellationToken ct)
         {
             var existingUser = await _userManager.FindByNameAsync(req.Email);
             if (existingUser != null)
             {
-                await Send.ResultAsync(Results.BadRequest(new RegisterResponse
+                await Send.ResultAsync(Results.BadRequest(new RegisterResponseDto
                 {
                     IsSuccess = false,
                     StatusCode = HttpStatusCode.BadRequest,
@@ -57,7 +57,7 @@ namespace VerticalSliceFastEndpoints.Features.Auth.Register
             var result = await _userManager.CreateAsync(newUser, req.Password);
             if (!result.Succeeded)
             {
-                await Send.ResultAsync(Results.BadRequest(new RegisterResponse
+                await Send.ResultAsync(Results.BadRequest(new RegisterResponseDto
                 {
                     IsSuccess = false,
                     StatusCode = HttpStatusCode.BadRequest,
@@ -75,7 +75,7 @@ namespace VerticalSliceFastEndpoints.Features.Auth.Register
                 await _userManager.AddToRoleAsync(newUser, SD.Role_Customer);
             }
 
-            await Send.OkAsync(new RegisterResponse
+            await Send.OkAsync(new RegisterResponseDto
             {
                 IsSuccess = true,
                 StatusCode = HttpStatusCode.OK,

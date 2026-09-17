@@ -33,52 +33,52 @@ VerticalSliceFastEndpoints/
 │   │   ├── Auth
 │   │   │   ├── Login
 │   │   │   │   ├── LoginEndpoint.cs
-│   │   │   │   ├── LoginRequest.cs
-│   │   │   │   ├── LoginResponse.cs
+│   │   │   │   ├── LoginRequestDto.cs
+│   │   │   │   ├── LoginResponseDto.cs
 │   │   │   │   └── LoginValidation.cs
 │   │   │   └── Register
 │   │   │       ├── RegisterEndpoint.cs
-│   │   │       ├── RegisterRequest.cs
-│   │   │       ├── RegisterResponse.cs
+│   │   │       ├── RegisterRequestDto.cs
+│   │   │       ├── RegisterResponseDto.cs
 │   │   │       └── RegisterValidation.cs
 │   │   ├── Product
 │   │   │   ├── CreateProduct
 │   │   │   │   ├── CreateProductEndpoint.cs
-│   │   │   │   ├── CreateProductRequest.cs
-│   │   │   │   ├── CreateProductResponse.cs
+│   │   │   │   ├── CreateProductRequestDto.cs
+│   │   │   │   ├── CreateProductResponseDto.cs
 │   │   │   │   └── CreateProductValidation.cs
 │   │   │   ├── DeleteProduct
 │   │   │   │   └── DeleteProductEndpoint.cs
 │   │   │   ├── GetProduct
 │   │   │   │   ├── GetProductEndpoint.cs
-│   │   │   │   └── GetProductResponse.cs
+│   │   │   │   └── GetProductResponseDto.cs
 │   │   │   ├── GetProducts
 │   │   │   │   ├── GetProductsEndpoint.cs
-│   │   │   │   ├── GetProductsRequest.cs
-│   │   │   │   ├── GetProductsResponse.cs
+│   │   │   │   ├── GetProductsRequestDto.cs
+│   │   │   │   ├── GetProductsResponseDto.cs
 │   │   │   │   ├── GetProductsValidation.cs
-│   │   │   │   └── ProductItemResponse.cs
+│   │   │   │   └── ProductItemResponseDto.cs
 │   │   │   ├── ImageUpload
 │   │   │   ├── UpdateProduct
 │   │   │   │   ├── UpdateProductEndpoint.cs
-│   │   │   │   ├── UpdateProductRequest.cs
-│   │   │   │   ├── UpdateProductResponse.cs
+│   │   │   │   ├── UpdateProductRequestDto.cs
+│   │   │   │   ├── UpdateProductResponseDto.cs
 │   │   │   │   └── UpdateProductValidation.cs
 │   │   │   └── UploadImage
 │   │   │       ├── UploadImageEndpoint.cs
-│   │   │       ├── UploadImageRequest.cs
-│   │   │       ├── UploadImageResponse.cs
+│   │   │       ├── UploadImageRequestDto.cs
+│   │   │       ├── UploadImageResponseDto.cs
 │   │   │       └── UploadImageValidation.cs
 │   │   ├── Users
 │   │   │   ├── GetUser
 │   │   │   │   ├── GetUserEndpoint.cs
-│   │   │   │   └── GetUserResponse.cs
+│   │   │   │   └── GetUserResponseDto.cs
 │   │   │   └── GetUsers
 │   │   │       ├── GetUsersEndpoint.cs
-│   │   │       ├── GetUsersRequest.cs
-│   │   │       ├── GetUsersResponse.cs
+│   │   │       ├── GetUsersRequestDto.cs
+│   │   │       ├── GetUsersResponseDto.cs
 │   │   │       ├── GetUsersValidation.cs
-│   │   │       └── UserItemResponse.cs
+│   │   │       └── UserItemResponseDto.cs
 │   │   └── TestEndpoint.cs
 │   ├── Migrations
 │   │   ├── 20260903092129_InitialCreate.cs
@@ -120,15 +120,15 @@ VerticalSliceFastEndpoints/
 
 Every feature slice under `Features/` follows the same four-file pattern. Using `Product/CreateProduct` as the reference example:
 
-- **`CreateProductRequest.cs`** — the input DTO bound from the HTTP request body.
+- **`CreateProductRequestDto.cs`** — the input DTO bound from the HTTP request body.
 - **`CreateProductValidation.cs`** — a `FluentValidation` `Validator<TRequest>` enforcing field rules (required, length, etc.) before the handler runs.
-- **`CreateProductResponse.cs`** — the output DTO returned to the client.
+- **`CreateProductResponseDto.cs`** — the output DTO returned to the client.
 - **`CreateProductEndpoint.cs`** — the FastEndpoints `Endpoint` (here, an `EndpointWithMapping<TRequest, TResponse, TEntity>`) that configures routing/auth/versioning and implements the handler logic, including request↔entity mapping.
 
 ### Example: `CreateProduct` slice
 
 ```csharp
-// CreateProductRequest.cs
+// CreateProductRequestDto.cs
 public class CreateProductRequest
 {
     public string Title { get; set; } = string.Empty;
@@ -150,7 +150,7 @@ public class CreateProductValidation : Validator<CreateProductRequest>
     }
 }
 
-// CreateProductResponse.cs
+// CreateProductResponseDto.cs
 public class CreateProductResponse
 {
     public Guid Id { get; set; }
@@ -264,8 +264,8 @@ app.MapScalarApiReference(options =>
 
 To add a new feature, create a new folder under `Features/<Area>/<FeatureName>/` containing:
 
-1. `<FeatureName>Request.cs` — input DTO
-2. `<FeatureName>Response.cs` — output DTO
+1. `<FeatureName>RequestDto.cs` — input DTO
+2. `<FeatureName>ResponseDto.cs` — output DTO
 3. `<FeatureName>Validation.cs` — a `Validator<TRequest>` with FluentValidation rules
 4. `<FeatureName>Endpoint.cs` — the FastEndpoints endpoint: configure route/version/auth/throttling in `Configure()`, implement logic in `HandleAsync()`
 
