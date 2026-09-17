@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Text;
+using System.Text.Json;
+using System.Xml.Serialization;
 using VerticalSliceFastEndpoints.Data;
 using VerticalSliceFastEndpoints.Entities;
 
@@ -54,6 +56,13 @@ builder.Services.AddAuthentication(options =>
         };
     });
 builder.Services.AddAuthorization();
+
+builder.Services.AddControllers(options =>
+{
+    // Force the server to return 406 if it cannot satisfy the Accept header
+    options.ReturnHttpNotAcceptable = true;
+})
+.AddXmlDataContractSerializerFormatters();
 
 builder.Services
 .AddFastEndpoints()
@@ -121,6 +130,44 @@ app
         c.Endpoints.RoutePrefix = "api";     // Base route prefix -> /api
         c.Versioning.Prefix = "v";           // Version number prefix -> v
         c.Versioning.PrependToRoute = true;  // COMBINES THEM INTO: /api/v1/...
+
+        c.Endpoints.Configurator = ep =>
+        {
+            ep.PreProcessor<AcceptHeaderValidator>(Order.Before);
+        };
+
+        c.Serializer.RequestDeserializer = async (req, tDto, jsonSerializerContext, ct) =>
+        {
+            if (req.ContentType?.Contains("xml") == true)
+            {
+                using var reader = new StreamReader(req.Body);
+                var xml = await reader.ReadToEndAsync(ct);
+                var serializer = new XmlSerializer(tDto);
+                using var stringReader = new StringReader(xml);
+                return serializer.Deserialize(stringReader)!;
+            }
+
+            return await JsonSerializer.DeserializeAsync(req.Body, tDto, (JsonSerializerOptions)null!, ct);
+        };
+
+        c.Serializer.ResponseSerializer = (rsp, dto, contentType, jsonContext, ct) =>
+        {
+            // Respect Accept header for negotiation, falling back to the passed contentType
+            var acceptHeader = rsp.HttpContext.Request.Headers.Accept.ToString();
+            var wantsXml = acceptHeader.Contains("xml") || contentType?.Contains("xml") == true;
+
+            if (wantsXml)
+            {
+                rsp.ContentType = "application/xml";
+                var serializer = new XmlSerializer(dto!.GetType());
+                using var ms = new MemoryStream();
+                serializer.Serialize(ms, dto);
+                return rsp.Body.WriteAsync(ms.ToArray(), ct).AsTask();
+            }
+
+            rsp.ContentType = "application/json";
+            return JsonSerializer.SerializeAsync(rsp.Body, dto, dto!.GetType(), (JsonSerializerOptions)null!, ct);
+        };
     });
 //.UseSwaggerGen();
 
