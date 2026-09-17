@@ -1,6 +1,6 @@
 ﻿namespace VerticalSliceFastEndpoints.Features.Auth.Register
 {
-    public class RegisterValidation : Validator<RegisterRequest>
+    public class RegisterValidation : Validator<RegisterRequestDto>
     {
         public RegisterValidation()
         {

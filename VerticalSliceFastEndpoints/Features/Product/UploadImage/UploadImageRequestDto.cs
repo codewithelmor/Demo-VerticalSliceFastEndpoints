@@ -1,6 +1,8 @@
 namespace  Features.Product.UploadImage;
 
-public class UploadImageRequest
+public class UploadImageRequestDto
 {
+    public UploadImageRequestDto() { }
+
     public IFormFile File { get; set; } = null!;
 }

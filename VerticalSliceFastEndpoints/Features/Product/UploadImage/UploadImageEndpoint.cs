@@ -1,14 +1,12 @@
 using Microsoft.EntityFrameworkCore;
-using System.Net;
 using System.Security.Claims;
 using VerticalSliceFastEndpoints;
 using VerticalSliceFastEndpoints.Data;
-using VerticalSliceFastEndpoints.Features.Auth.Register;
 using Entity = VerticalSliceFastEndpoints.Entities.Product;
 
 namespace Features.Product.UploadImage;
 
-public class UploadImageEndpoint : EndpointWithMapping<UploadImageRequest, UploadImageResponse, Entity>
+public class UploadImageEndpoint : EndpointWithMapping<UploadImageRequestDto, UploadImageResponseDto, Entity>
 {
     private readonly ApplicationDbContext _context;
 
@@ -19,7 +17,7 @@ public class UploadImageEndpoint : EndpointWithMapping<UploadImageRequest, Uploa
 
     public override void Configure()
     {
-        PreProcessor<PreProcessorLogging<UploadImageRequest>>();
+        PreProcessor<PreProcessorLogging<UploadImageRequestDto>>();
         Post("/products/{id}");
         Version(1);
         //AllowAnonymous();
@@ -36,12 +34,12 @@ public class UploadImageEndpoint : EndpointWithMapping<UploadImageRequest, Uploa
         Description(x => x
             .WithTags("Products")
             .WithDescription("Uploads an image for a specific product.Requires Admin role.")
-            .Accepts<UploadImageRequest>("multipart/form-data") // For Swagger UI display
-            .Produces<UploadImageResponse>(201)
+            .Accepts<UploadImageRequestDto>("multipart/form-data") // For Swagger UI display
+            .Produces<UploadImageResponseDto>(201)
             .ProducesProblem(400));
     }
 
-    public override async Task HandleAsync(UploadImageRequest req, CancellationToken ct)
+    public override async Task HandleAsync(UploadImageRequestDto req, CancellationToken ct)
     {
         // Extract the {id} parameter safely directly from the route path
         var id = Route<Guid>("id");
@@ -77,7 +75,7 @@ public class UploadImageEndpoint : EndpointWithMapping<UploadImageRequest, Uploa
         await _context.SaveChangesAsync(ct);
 
         // 6. Map to Response and return success status
-        var response = new UploadImageResponse
+        var response = new UploadImageResponseDto
         {
             ProductId = product.Id,
             FileName = req.File.FileName,

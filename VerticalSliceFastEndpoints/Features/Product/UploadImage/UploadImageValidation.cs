@@ -1,6 +1,6 @@
 namespace Features.Product.UploadImage;
 
-public class UploadImageValidation : Validator<UploadImageRequest>
+public class UploadImageValidation : Validator<UploadImageRequestDto>
 {
     private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png", ".webp"];
     private const long MaxFileSizeInBytes = 5 * 1024 * 1024; // 5 MB

@@ -4,7 +4,7 @@ using VerticalSliceFastEndpoints.Features.Product.GetProducts;
 
 namespace Features.Product.GetProduct;
 
-public class GetProductEndpoint : EndpointWithoutRequest<GetProductResponse>
+public class GetProductEndpoint : EndpointWithoutRequest<GetProductResponseDto>
 {
     private readonly ApplicationDbContext _context;
 
@@ -22,7 +22,7 @@ public class GetProductEndpoint : EndpointWithoutRequest<GetProductResponse>
         Description(x => x
             .WithTags("Products")
             .WithDescription("Get a single product by its ID.")
-            .Produces<GetProductResponse>(200)
+            .Produces<GetProductResponseDto>(200)
             .ProducesProblem(404));
     }
 
@@ -44,7 +44,7 @@ public class GetProductEndpoint : EndpointWithoutRequest<GetProductResponse>
         }
 
         // 3. Map to response object
-        var response = new GetProductResponse
+        var response = new GetProductResponseDto
         {
             Id = product.Id,
             Title = product.Title,

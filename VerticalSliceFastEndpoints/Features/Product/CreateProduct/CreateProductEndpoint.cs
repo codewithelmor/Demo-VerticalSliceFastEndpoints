@@ -5,7 +5,7 @@ using Entity = VerticalSliceFastEndpoints.Entities.Product;
 
 namespace Features.Product.CreateProduct;
 
-public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequest, CreateProductResponse, Entity>
+public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequestDto, CreateProductResponseDto, Entity>
 {
     private readonly ApplicationDbContext _context;
 
@@ -16,7 +16,7 @@ public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequest, C
 
     public override void Configure()
     {
-        PreProcessor<PreProcessorLogging<CreateProductRequest>>();
+        PreProcessor<PreProcessorLogging<CreateProductRequestDto>>();
         Post("/products");
         Version(1);
         //AllowAnonymous();
@@ -33,11 +33,11 @@ public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequest, C
         Description(x => x
             .WithTags("Products")
             .WithDescription("Creates a new product in the system.")
-            .Produces<CreateProductResponse>(201)
+            .Produces<CreateProductResponseDto>(201)
             .ProducesProblem(400));
     }
 
-    public override async Task HandleAsync(CreateProductRequest req, CancellationToken ct)
+    public override async Task HandleAsync(CreateProductRequestDto req, CancellationToken ct)
     {
         // 1. Map request DTO to your Product domain entity
         var product = MapToEntity(req);
@@ -53,7 +53,7 @@ public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequest, C
         await Send.CreatedAtAsync("/products/{id}", new { id = response.Id }, response, cancellation: ct);
     }
 
-    public override Entity MapToEntity(CreateProductRequest req)
+    public override Entity MapToEntity(CreateProductRequestDto req)
     {
         // Standard ASP.NET Core approach
         string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -61,8 +61,8 @@ public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequest, C
         return new Entity(req.Title, req.Description, createdByUserId: userId);
     }
     
-    public override CreateProductResponse MapFromEntity(Entity entity)
+    public override CreateProductResponseDto MapFromEntity(Entity entity)
     {
-        return new CreateProductResponse { Id = entity.Id, Title = entity.Title, Description = entity.Description };
+        return new CreateProductResponseDto { Id = entity.Id, Title = entity.Title, Description = entity.Description };
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Features.Product.GetProducts;
 
-public class GetProductsValidation : Validator<GetProductsRequest>
+public class GetProductsValidation : Validator<GetProductsRequestDto>
 {
     public GetProductsValidation()
     {

@@ -1,6 +1,6 @@
 namespace Features.Product.UpdateProduct;
 
-public class UpdateProductValidation : Validator<UpdateProductRequest>
+public class UpdateProductValidation : Validator<UpdateProductRequestDto>
 {
     public UpdateProductValidation()
     {

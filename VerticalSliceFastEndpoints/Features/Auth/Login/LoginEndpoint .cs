@@ -9,7 +9,7 @@ using VerticalSliceFastEndpoints.Features.Auth.Register;
 
 namespace VerticalSliceFastEndpoints.Features.Auth.Login
 {
-    public class LoginEndpoint : Endpoint<LoginRequest, LoginResponse>
+    public class LoginEndpoint : Endpoint<LoginRequestDto, LoginResponseDto>
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -32,12 +32,12 @@ namespace VerticalSliceFastEndpoints.Features.Auth.Login
             AllowAnonymous();
             Description(x => x
                 .WithTags("Authentication")
-                .Produces<LoginResponse>(200)
-                .Produces<LoginResponse>(400)
-                .Produces<LoginResponse>(404));
+                .Produces<LoginResponseDto>(200)
+                .Produces<LoginResponseDto>(400)
+                .Produces<LoginResponseDto>(404));
         }
 
-        public override async Task HandleAsync(LoginRequest req, CancellationToken ct)
+        public override async Task HandleAsync(LoginRequestDto req, CancellationToken ct)
         {
             var user = await _userManager.FindByNameAsync(req.Email);
             if (user == null)
@@ -74,7 +74,7 @@ namespace VerticalSliceFastEndpoints.Features.Auth.Login
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 
-            await Send.OkAsync(new LoginResponse
+            await Send.OkAsync(new LoginResponseDto
             {
                 IsSuccess = true,
                 StatusCode = HttpStatusCode.OK,
@@ -88,7 +88,7 @@ namespace VerticalSliceFastEndpoints.Features.Auth.Login
 
         private async Task SendBadRequestAsync(string errorMessage, CancellationToken ct)
         {
-            await Send.ResultAsync(Results.BadRequest(new RegisterResponse
+            await Send.ResultAsync(Results.BadRequest(new RegisterResponseDto
             {
                 IsSuccess = false,
                 StatusCode = HttpStatusCode.BadRequest,

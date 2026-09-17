@@ -6,7 +6,7 @@ using VerticalSliceFastEndpoints.Features.User.GetUsers;
 
 namespace Features.User.GetUsers;
 
-public class GetUsersEndpoint : Endpoint<GetUsersRequest, GetUsersResponse>
+public class GetUsersEndpoint : Endpoint<GetUsersRequestDto, GetUsersResponseDto>
 {
     private readonly string _connectionString;
 
@@ -25,11 +25,11 @@ public class GetUsersEndpoint : Endpoint<GetUsersRequest, GetUsersResponse>
         Description(x => x
             .WithTags("Users")
             .WithDescription("Retrieves a paginated list of Users from the database.")
-            .Produces<GetUsersResponse>(200)
+            .Produces<GetUsersResponseDto>(200)
             .ProducesProblem(400));
     }
 
-    public override async Task HandleAsync(GetUsersRequest req, CancellationToken ct)
+    public override async Task HandleAsync(GetUsersRequestDto req, CancellationToken ct)
     {
         // 1. Query the database with pagination bounds
         // SQL Server high-performance pagination with Total Record Tracking via window functions
@@ -55,16 +55,16 @@ public class GetUsersEndpoint : Endpoint<GetUsersRequest, GetUsersResponse>
         using IDbConnection db = new SqlConnection(_connectionString);
 
         // Dictionary to track and merge user rows with multiple roles
-        var userDictionary = new Dictionary<string, UserItemResponse>();
+        var userDictionary = new Dictionary<string, UserItemResponseDto>();
         int totalRecords = 0;
 
         // Dapper Multi-Mapping: This processes rows where columns belong to different data types.
-        // <UserItemResponse, string, int, UserItemResponse> means:
-        //   1st Type (UserItemResponse): Input object representing the user columns.
+        // <UserItemResponseDto, string, int, UserItemResponseDto> means:
+        //   1st Type (UserItemResponseDto): Input object representing the user columns.
         //   2nd Type (string): Input item representing the RoleName column.
         //   3rd Type (int): Input item representing the TotalCount column.
-        //   4th Type (UserItemResponse): The final merged object returned by this function.
-        await db.QueryAsync<UserItemResponse, string, int, UserItemResponse>(
+        //   4th Type (UserItemResponseDto): The final merged object returned by this function.
+        await db.QueryAsync<UserItemResponseDto, string, int, UserItemResponseDto>(
             sql,
             // This lambda function runs automatically for EVERY single row returned by SQL.
             (user, roleName, totalCount) =>
@@ -98,7 +98,7 @@ public class GetUsersEndpoint : Endpoint<GetUsersRequest, GetUsersResponse>
             param: new { Offset = (req.PageNumber - 1) * req.PageSize, PageSize = req.PageSize },
 
             // Crucial: Tells Dapper where to cut off columns in the SQL result grid.
-            // Everything before "RoleName" belongs to the UserItemResponse object.
+            // Everything before "RoleName" belongs to the UserItemResponseDto object.
             // "RoleName" maps to the string parameter. "TotalCount" maps to the int parameter.
             splitOn: "RoleName,TotalCount"
         );
@@ -109,7 +109,7 @@ public class GetUsersEndpoint : Endpoint<GetUsersRequest, GetUsersResponse>
         var totalCount = items.Count();
 
         // 3. Populate and return response envelope
-        var response = new GetUsersResponse
+        var response = new GetUsersResponseDto
         {
             Items = items,
             PageNumber = req.PageNumber,
