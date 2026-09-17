@@ -15,6 +15,7 @@ The API includes JWT-based authentication and role-based authorization (via ASP.
 - **Entity Framework Core (SQL Server)** `10.0.11`
 - **Dapper** `2.1.86` — for lightweight/raw queries where needed
 - **[Scalar.AspNetCore](https://github.com/scalar/scalar)** — modern interactive API reference UI (replaces Swagger UI)
+- **JSON + XML content negotiation** — custom `Serializer.RequestDeserializer` / `ResponseSerializer` hooks accept and return both `application/json` and `application/xml`
 
 ## Project Structure
 
@@ -91,6 +92,7 @@ VerticalSliceFastEndpoints/
 │   │   ├── 20260904110845_ImageUploadToProduct.Designer.cs
 │   │   └── ApplicationDbContextModelSnapshot.cs
 │   ├── PreProcessors
+│   │   ├── AcceptHeaderValidator.cs
 │   │   └── PreProcessorLogging.cs
 │   ├── Properties
 │   │   └── launchSettings.json
@@ -113,7 +115,7 @@ VerticalSliceFastEndpoints/
 | `Entities/` | Domain/EF Core entities (`ApplicationUser`, `Product`) |
 | `Features/` | One folder per feature slice, grouped by aggregate (`Auth`, `Product`, `Users`) — each slice owns its endpoint, request, response, and validator |
 | `Migrations/` | EF Core migration history |
-| `PreProcessors/` | FastEndpoints pre-processors (e.g. request logging) shared across endpoints |
+| `PreProcessors/` | FastEndpoints pre-processors shared across endpoints (request logging, `Accept` header validation) |
 | `SD.cs` | Static/shared definitions, e.g. role name constants (`SD.Role_Admin`) |
 
 ## Feature Slice Anatomy
@@ -238,6 +240,180 @@ app.MapScalarApiReference(options =>
         .AddDocument("v2", "Product API v2", "/openapi/v2.json");
 });
 ```
+
+## Content Negotiation (JSON + XML)
+
+FastEndpoints only speaks JSON (`System.Text.Json`) out of the box — it has no built-in content negotiation like MVC's `AddXmlSerializerFormatters()`. This project adds `application/xml` support alongside JSON by overriding FastEndpoints' serialization hooks directly, and enforces a strict `406 Not Acceptable` for anything else, mirroring MVC's `ReturnHttpNotAcceptable = true`.
+
+### How it works
+
+- **`Config.Serializer.RequestDeserializer`** — inspects the request's `Content-Type`. If it contains `xml`, the body is deserialized with `System.Xml.Serialization.XmlSerializer`; otherwise it falls back to `System.Text.Json`.
+- **`Config.Serializer.ResponseSerializer`** — inspects the request's `Accept` header (falling back to the `contentType` FastEndpoints passes in). If XML is requested, the response DTO is serialized with `XmlSerializer` and written with `Content-Type: application/xml`; otherwise JSON is returned as usual.
+- **`AcceptHeaderValidator`** (`PreProcessors/AcceptHeaderValidator.cs`) — a global `IGlobalPreProcessor` that runs before every endpoint. If the `Accept` header doesn't match a supported media type (and isn't `*/*` or empty), it short-circuits the pipeline and returns `406 Not Acceptable` without ever reaching the handler.
+
+```csharp
+// Program.cs
+app.UseFastEndpoints(c =>
+{
+    c.Endpoints.RoutePrefix = "api";
+    c.Versioning.Prefix = "v";
+    c.Versioning.PrependToRoute = true;
+
+    c.Endpoints.Configurator = ep =>
+    {
+        ep.PreProcessor<AcceptHeaderValidator>(Order.Before); // -> 406 for unsupported Accept headers
+    };
+
+    c.Serializer.RequestDeserializer = async (req, tDto, jsonSerializerContext, ct) =>
+    {
+        if (req.ContentType?.Contains("xml") == true)
+        {
+            using var reader = new StreamReader(req.Body);
+            var xml = await reader.ReadToEndAsync(ct);
+            var serializer = new XmlSerializer(tDto);
+            using var stringReader = new StringReader(xml);
+            return serializer.Deserialize(stringReader)!;
+        }
+
+        return await JsonSerializer.DeserializeAsync(req.Body, tDto, (JsonSerializerOptions)null!, ct);
+    };
+
+    c.Serializer.ResponseSerializer = (rsp, dto, contentType, jsonContext, ct) =>
+    {
+        var acceptHeader = rsp.HttpContext.Request.Headers.Accept.ToString();
+        var wantsXml = acceptHeader.Contains("xml") || contentType?.Contains("xml") == true;
+
+        if (wantsXml)
+        {
+            rsp.ContentType = "application/xml";
+            var serializer = new XmlSerializer(dto!.GetType());
+            using var ms = new MemoryStream();
+            serializer.Serialize(ms, dto);
+            return rsp.Body.WriteAsync(ms.ToArray(), ct).AsTask();
+        }
+
+        rsp.ContentType = "application/json";
+        return JsonSerializer.SerializeAsync(rsp.Body, dto, dto!.GetType(), (JsonSerializerOptions)null!, ct);
+    };
+});
+```
+
+```csharp
+// PreProcessors/AcceptHeaderValidator.cs
+public class AcceptHeaderValidator : IGlobalPreProcessor
+{
+    private static readonly string[] Supported = { "application/json", "application/xml", "text/xml" };
+
+    public Task PreProcessAsync(IPreProcessorContext ctx, CancellationToken ct)
+    {
+        var accept = ctx.HttpContext.Request.Headers.Accept.ToString();
+
+        var isAcceptable =
+            string.IsNullOrEmpty(accept) ||
+            accept.Contains("*/*") ||
+            Supported.Any(s => accept.Contains(s, StringComparison.OrdinalIgnoreCase));
+
+        if (!isAcceptable && !ctx.HttpContext.ResponseStarted())
+        {
+            ctx.HttpContext.Response.StatusCode = StatusCodes.Status406NotAcceptable;
+            return ctx.HttpContext.Response.StartAsync(ct);
+        }
+
+        return Task.CompletedTask;
+    }
+}
+```
+
+### DTO requirements for XML support
+
+`XmlSerializer` is far stricter than `System.Text.Json` about the shapes it can (de)serialize. Any request/response DTO that needs to work over XML — which in practice means **all of them**, since content negotiation is global — must follow these rules:
+
+| Requirement | Why |
+|---|---|
+| **Public parameterless constructor** | `XmlSerializer` instantiates the object directly and populates it via setters; it cannot call a parameterized constructor. |
+| **Public read/write (`get; set;`) properties** | `init`-only or get-only properties can't be set after construction and will be silently skipped or throw. |
+| **Avoid C# `record` types** | Records default to a primary constructor + `init` accessors — both incompatible. Prefer plain `class` DTOs. |
+| **Concrete collection types only** (`List<T>`, `T[]`) | Interface-typed collection properties (`IReadOnlyCollection<T>`, `IEnumerable<T>`, `ICollection<T>`) throw `NotSupportedException: Cannot serialize member ... because it is an interface.` at runtime. |
+| **`required` is fine, but still needs a normal setter** | `XmlSerializer` ignores `required` and just uses the public setter — make sure one exists. |
+
+Example — a response DTO written to be XML-safe:
+
+```csharp
+public class UserItemResponseDto
+{
+    public UserItemResponseDto() { } // parameterless ctor
+
+    public string UserId { get; set; } = default!;
+    public string UserName { get; set; } = default!;
+    public string Email { get; set; } = default!;
+    public bool EmailConfirmed { get; set; }
+    public List<string> Roles { get; set; } = new(); // concrete List<T>, not IReadOnlyCollection<T>
+}
+
+public class GetUsersResponseDto
+{
+    public GetUsersResponseDto() { }
+
+    public List<UserItemResponseDto> Items { get; set; } = new(); // concrete List<T>, not an interface type
+}
+```
+
+### When to use `[XmlRoot]`, `[XmlElement]`, and `[XmlAttribute]`
+
+By default, `XmlSerializer` needs no annotations at all — it uses the class name as the root element and each public property name as a child element. Reach for these attributes only when the default shape doesn't match what you need:
+
+| Attribute | Use it when... | Default behavior without it |
+|---|---|---|
+| **`[XmlRoot("Name")]`** | You want to control the **outer/root element name** of the serialized document — e.g. matching a naming convention a consuming system expects, or because the DTO class name itself is awkward as an element name (`GetUsersResponseDto` → `<Users>`). Goes on the **class**, not a property. | The root element is named after the C# class, e.g. `<GetUsersResponseDto>`. |
+| **`[XmlElement("Name")]`** | You want a **property serialized under a different element name** than the C# property name — e.g. `Name` property but the XML should say `<ProductName>`; or you need explicit control over element **order** (`XmlSerializer` emits properties in declaration order, so reordering properties in the class changes the XML — `[XmlElement(Order = n)]` can pin it explicitly). | The property is serialized as a child element using its exact C# property name, e.g. `public string Name` → `<Name>`. |
+| **`[XmlAttribute("name")]`** | You want a value to appear as an **XML attribute** on the parent element instead of a nested child element — typically for small identifying values (`id`, `code`, `version`) rather than the "body" content of the entity. Common when mirroring an existing XML schema that uses attributes for metadata. | The property is serialized as a child element, never an attribute — this is opt-in only. |
+
+**Rule of thumb:** don't add these speculatively. Start with plain properties (no attributes) and only add `[XmlElement]`/`[XmlAttribute]` when a specific consumer's expected XML shape (or an existing schema/contract you must match) requires renaming, reordering, or promoting a field to an attribute. `[XmlRoot]` is worth adding on every top-level request/response DTO if you want stable, predictable root element names instead of leaking your C# class names into the wire format.
+
+Example — the same `UserItemResponseDto` with annotations applied to rename the root, rename an element, and promote an id to an attribute:
+
+```csharp
+[XmlRoot("User")] // root element becomes <User>...</User> instead of <UserItemResponseDto>
+public class UserItemResponseDto
+{
+    public UserItemResponseDto() { }
+
+    [XmlAttribute("id")]              // rendered as an attribute: <User id="...">
+    public string UserId { get; set; } = default!;
+
+    [XmlElement("Name")]              // rendered as <Name> instead of <UserName>
+    public string UserName { get; set; } = default!;
+
+    public string Email { get; set; } = default!;
+    public bool EmailConfirmed { get; set; }
+    public List<string> Roles { get; set; } = new();
+}
+```
+
+which serializes as:
+
+```xml
+<User id="abc-123">
+  <Name>jdoe</Name>
+  <Email>jdoe@example.com</Email>
+  <EmailConfirmed>true</EmailConfirmed>
+  <Roles>
+    <string>Admin</string>
+  </Roles>
+</User>
+```
+
+Also worth knowing: **`[XmlIgnore]`** excludes a property from XML entirely (useful if a property should serialize to JSON but never appear in XML output) — pair it with `[JsonIgnore]` if you need the opposite exclusion for JSON.
+
+### Behavior summary
+
+| Request | Result |
+|---|---|
+| `Content-Type: application/json` | Body deserialized as JSON |
+| `Content-Type: application/xml` or `text/xml` | Body deserialized as XML via `XmlSerializer` |
+| `Accept: application/json` (or omitted / `*/*`) | Response serialized as JSON |
+| `Accept: application/xml` or `text/xml` | Response serialized as XML via `XmlSerializer` |
+| `Accept: <unsupported type>` (e.g. `text/csv`) | **`406 Not Acceptable`** returned immediately by `AcceptHeaderValidator`; handler never runs |
 
 ## Getting Started
 
