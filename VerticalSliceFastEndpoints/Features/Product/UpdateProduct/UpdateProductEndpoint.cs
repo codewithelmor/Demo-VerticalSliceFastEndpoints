@@ -52,7 +52,7 @@ public class UpdateProductEndpoint : EndpointWithMapping<UpdateProductRequestDto
         // 2. Perform updates from the body payload
         product.Title = req.Title;
         product.Description = req.Description;
-        product.UpdatedDate = DateTime.UtcNow;
+        //product.UpdatedDate = DateTime.UtcNow;
 
         // 2. Update the product to the DbContext and save changes to the database
         _context.Products.Update(product);
@@ -68,9 +68,10 @@ public class UpdateProductEndpoint : EndpointWithMapping<UpdateProductRequestDto
     public override Entity MapToEntity(UpdateProductRequestDto req)
     {
         // Standard ASP.NET Core approach
-        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        //string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-        return new Entity(req.Title, req.Description, updatedByUserId: userId);
+        //return new Entity(req.Title, req.Description, updatedByUserId: userId);
+        return new Entity(req.Title, req.Description);
     }
     
     public override UpdateProductResponseDto MapFromEntity(Entity entity)
