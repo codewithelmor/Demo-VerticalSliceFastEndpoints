@@ -124,6 +124,12 @@ app
             ep.PreProcessor<AcceptHeaderValidator>(Order.Before);
         };
 
+        // Define options once outside the delegate to avoid per-request allocations
+        var jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
         c.Serializer.RequestDeserializer = async (req, tDto, jsonSerializerContext, ct) =>
         {
             if (req.ContentType?.Contains("xml") == true)
@@ -135,7 +141,7 @@ app
                 return serializer.Deserialize(stringReader)!;
             }
 
-            return await JsonSerializer.DeserializeAsync(req.Body, tDto, (JsonSerializerOptions)null!, ct);
+            return await JsonSerializer.DeserializeAsync(req.Body, tDto, jsonOptions, ct);
         };
 
         c.Serializer.ResponseSerializer = (rsp, dto, contentType, jsonContext, ct) =>
@@ -154,7 +160,7 @@ app
             }
 
             rsp.ContentType = "application/json";
-            return JsonSerializer.SerializeAsync(rsp.Body, dto, dto!.GetType(), (JsonSerializerOptions)null!, ct);
+            return JsonSerializer.SerializeAsync(rsp.Body, dto, dto!.GetType(), jsonOptions, ct);
         };
     });
 //.UseSwaggerGen();
