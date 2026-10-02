@@ -2,7 +2,7 @@
 {
     public class AcceptHeaderValidator : IGlobalPreProcessor
     {
-        private static readonly string[] Supported = { "application/json", "application/xml", "text/xml" };
+        private static readonly string[] Supported = { MediaTypeNames.Application.Json, MediaTypeNames.Application.Xml, MediaTypeNames.Text.Xml };
 
         public Task PreProcessAsync(IPreProcessorContext ctx, CancellationToken ct)
         {
