@@ -1,5 +1,7 @@
 ﻿var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<List<CorsCompanySettings>>(
+    builder.Configuration.GetSection(CorsCompanySettings.SectionName));
 builder.Services.Configure<JwtSettings>(
     builder.Configuration.GetSection(JwtSettings.SectionName));
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
@@ -25,15 +27,38 @@ builder.Services.AddCors(options =>
         policy.AllowAnyHeader();
     });
 
+    var corsCompanies = builder.Configuration
+        .GetSection(CorsCompanySettings.SectionName)
+        .Get<List<CorsCompanySettings>>() ?? [];
+
+    // One policy per company, named after the company
+    foreach (var company in corsCompanies)
+    {
+        options.AddPolicy(company.Company, policy =>
+        {
+            policy.WithOrigins(company.AllowedOrigins)
+                  .WithMethods(company.AllowedMethods)
+                  .WithHeaders(company.AllowedHeaders);
+        });
+    }
+
+    // Combined policy: any origin/method/header allowed by ANY company
     options.AddPolicy("RestrictedPolicy", policy =>
     {
-        policy.WithOrigins(
-                "https://myfrontend.com",
-                "https://admin.myfrontend.com"
-            )
-            .WithMethods(HttpMethods.Get, HttpMethods.Post)
-            .WithHeaders(HeaderNames.ContentType, HeaderNames.Authorization);
+        policy.WithOrigins(corsCompanies.SelectMany(c => c.AllowedOrigins).Distinct().ToArray())
+              .WithMethods(corsCompanies.SelectMany(c => c.AllowedMethods).Distinct().ToArray())
+              .WithHeaders(corsCompanies.SelectMany(c => c.AllowedHeaders).Distinct().ToArray());
     });
+
+    //options.AddPolicy("RestrictedPolicy", policy =>
+    //{
+    //    policy.WithOrigins(
+    //            "https://myfrontend.com",
+    //            "https://admin.myfrontend.com"
+    //        )
+    //        .WithMethods(HttpMethods.Get, HttpMethods.Post)
+    //        .WithHeaders(HeaderNames.ContentType, HeaderNames.Authorization);
+    //});
 });
 
 builder.Services.AddAuthentication(options =>
