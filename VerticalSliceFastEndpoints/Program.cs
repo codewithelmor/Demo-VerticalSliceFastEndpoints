@@ -1,5 +1,12 @@
 ﻿var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<JwtSettings>(
+    builder.Configuration.GetSection(JwtSettings.SectionName));
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+
+// Read JWT settings once
+var apiSettings = builder.Configuration.GetSection(JwtSettings.SectionName);
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
@@ -41,9 +48,17 @@ builder.Services.AddAuthentication(options =>
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["ApiSettings:Secret"]!)),
-            ValidateAudience = false,
-            ValidateIssuer = false
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(apiSettings["Secret"]!)),
+
+            ValidateIssuer = true,
+            ValidIssuer = apiSettings["Issuer"],
+
+            ValidateAudience = true,
+            ValidAudience = apiSettings["Audience"],
+
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromMinutes(1)
         };
     });
 builder.Services.AddAuthorization();
