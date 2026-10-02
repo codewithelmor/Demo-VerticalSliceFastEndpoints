@@ -257,6 +257,9 @@ namespace VerticalSliceFastEndpoints.Migrations
                     b.Property<DateTime?>("ImageUploadedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)

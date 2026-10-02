@@ -1,44 +1,21 @@
 ﻿namespace VerticalSliceFastEndpoints.Entities;
 
-public class Product
+public partial class Product
 {
     public Guid Id { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public DateTime CreatedDate { get; set; }
+    public string CreatedByUserId { get; set; }
     public DateTime? UpdatedDate { get; set; }
+    public string? UpdatedByUserId { get; set; } = null;
+    public bool IsDeleted { get; set; }
     public DateTime? DeletedDate { get; set; }
+    public string? DeletedByUserId { get; set; } = null;
     public byte[]? ImageContent { get; set; }
     public string? ImageFileName { get; set; }
     public DateTime? ImageUploadedDate { get; set; }
-
-    // Foreign Key Property
-    public string CreatedByUserId { get; set; }
-
-    // Navigation Property
-    [ForeignKey(nameof(CreatedByUserId))]
-    public virtual ApplicationUser? CreatedByUser { get; set; }
-
-    // Foreign Key Property
-    public string? UpdatedByUserId { get; set; } = null;
-
-    // Navigation Property
-    [ForeignKey(nameof(UpdatedByUserId))]
-    public virtual ApplicationUser? UpdatedByUser { get; set; }
-
-    // Foreign Key Property
-    public string? DeletedByUserId { get; set; } = null;
-
-    // Navigation Property
-    [ForeignKey(nameof(DeletedByUserId))]
-    public virtual ApplicationUser? DeletedByUser { get; set; }
-
-    // Foreign Key Property
     public string? ImageUploadedByUserId { get; set; } = null;
-
-    // Navigation Property
-    [ForeignKey(nameof(ImageUploadedByUserId))]
-    public virtual ApplicationUser? ImageUploadedByUser { get; set; }
 
     public Product() { }
 
