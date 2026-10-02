@@ -1,9 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using VerticalSliceFastEndpoints;
-using VerticalSliceFastEndpoints.Data;
-
-namespace Features.Product.DeleteProduct;
+﻿namespace Features.Product.DeleteProduct;
 
 public class DeleteProductEndpoint : EndpointWithoutRequest
 {

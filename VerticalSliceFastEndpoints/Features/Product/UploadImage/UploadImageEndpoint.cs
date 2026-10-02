@@ -1,9 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using VerticalSliceFastEndpoints;
-using VerticalSliceFastEndpoints.Data;
-using Entity = VerticalSliceFastEndpoints.Entities.Product;
-
+﻿using Entity = VerticalSliceFastEndpoints.Entities.Product;
 namespace Features.Product.UploadImage;
 
 public class UploadImageEndpoint : EndpointWithMapping<UploadImageRequestDto, UploadImageResponseDto, Entity>

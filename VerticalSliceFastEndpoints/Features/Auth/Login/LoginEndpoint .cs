@@ -1,13 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using System.Security.Claims;
-using System.Text;
-using VerticalSliceFastEndpoints.Entities;
-using VerticalSliceFastEndpoints.Features.Auth.Register;
-
-namespace VerticalSliceFastEndpoints.Features.Auth.Login
+﻿namespace VerticalSliceFastEndpoints.Features.Auth.Login
 {
     public class LoginEndpoint : Endpoint<LoginRequestDto, LoginResponseDto>
     {

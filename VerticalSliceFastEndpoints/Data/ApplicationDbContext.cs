@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using VerticalSliceFastEndpoints.Entities;
-
-namespace VerticalSliceFastEndpoints.Data
+﻿namespace VerticalSliceFastEndpoints.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {

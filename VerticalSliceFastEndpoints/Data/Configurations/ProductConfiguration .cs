@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using VerticalSliceFastEndpoints.Entities;
-
-namespace VerticalSliceFastEndpoints.Data.Configurations
+﻿namespace VerticalSliceFastEndpoints.Data.Configurations
 {
     public class ProductConfiguration : IEntityTypeConfiguration<Product>
     {

@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace VerticalSliceFastEndpoints.Features.Auth.Login
+﻿namespace VerticalSliceFastEndpoints.Features.Auth.Login
 {
     public class LoginResponseDto
     {
