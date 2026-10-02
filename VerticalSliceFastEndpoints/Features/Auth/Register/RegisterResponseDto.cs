@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace VerticalSliceFastEndpoints.Features.Auth.Register
+﻿namespace VerticalSliceFastEndpoints.Features.Auth.Register
 {
     public class RegisterResponseDto
     {

@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace VerticalSliceFastEndpoints.Entities;
+﻿namespace VerticalSliceFastEndpoints.Entities;
 
 public class Product
 {

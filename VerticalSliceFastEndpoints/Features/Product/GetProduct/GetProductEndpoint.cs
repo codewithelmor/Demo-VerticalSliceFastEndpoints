@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using VerticalSliceFastEndpoints.Data;
-using VerticalSliceFastEndpoints.Features.Product.GetProducts;
-
-namespace Features.Product.GetProduct;
+﻿namespace Features.Product.GetProduct;
 
 public class GetProductEndpoint : EndpointWithoutRequest<GetProductResponseDto>
 {

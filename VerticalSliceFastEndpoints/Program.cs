@@ -1,16 +1,4 @@
-using FastEndpoints.OpenApi;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Scalar.AspNetCore;
-using System.Text;
-using System.Text.Json;
-using System.Xml.Serialization;
-using VerticalSliceFastEndpoints.Data;
-using VerticalSliceFastEndpoints.Entities;
-
-var builder = WebApplication.CreateBuilder(args);
+﻿var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();

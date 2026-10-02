@@ -1,10 +1,4 @@
-﻿using Dapper;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
-using VerticalSliceFastEndpoints.Features.User.GetUsers;
-
-namespace Features.User.GetUser;
+﻿namespace Features.User.GetUser;
 
 public class GetUserEndpoint : EndpointWithoutRequest<GetUserResponseDto>
 {

@@ -1,8 +1,4 @@
-using System.Security.Claims;
-using VerticalSliceFastEndpoints;
-using VerticalSliceFastEndpoints.Data;
-using Entity = VerticalSliceFastEndpoints.Entities.Product;
-
+﻿using Entity = VerticalSliceFastEndpoints.Entities.Product;
 namespace Features.Product.CreateProduct;
 
 public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequestDto, CreateProductResponseDto, Entity>

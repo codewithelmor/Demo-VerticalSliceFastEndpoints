@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.Net;
-using VerticalSliceFastEndpoints.Entities;
-
-namespace VerticalSliceFastEndpoints.Features.Auth.Register
+﻿namespace VerticalSliceFastEndpoints.Features.Auth.Register
 {
     public class RegisterEndpoint : Endpoint<RegisterRequestDto, RegisterResponseDto>
     {
