@@ -37,7 +37,7 @@ public class DeleteProductEndpoint : EndpointWithoutRequest
         var id = Route<Guid>("id");
 
         // Standard ASP.NET Core approach
-        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        //string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
         // 1. Fetch the product using the extracted ID
         var product = await _context.Products
@@ -51,8 +51,10 @@ public class DeleteProductEndpoint : EndpointWithoutRequest
         }
 
         // 3. Apply soft-delete timestamp instead of calling _context.Products.Remove(product)
-        product.DeletedDate = DateTime.UtcNow;
-        product.DeletedByUserId = userId;
+        //product.DeletedDate = DateTime.UtcNow;
+        //product.DeletedByUserId = userId;
+        //product.IsDeleted = true;
+        _context.Products.Remove(product); // If you want to perform a hard delete instead of soft delete, uncomment this line
 
         // 4. Persist changes to the database
         await _context.SaveChangesAsync(ct);

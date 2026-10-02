@@ -30,4 +30,5 @@ global using VerticalSliceFastEndpoints.Entities;
 global using VerticalSliceFastEndpoints.Features.Auth.Register;
 global using VerticalSliceFastEndpoints.Features.Product.GetProducts;
 global using VerticalSliceFastEndpoints.Features.User.GetUsers;
+global using VerticalSliceFastEndpoints.Infrastructure;
 global using VerticalSliceFastEndpoints.PreProcessors;

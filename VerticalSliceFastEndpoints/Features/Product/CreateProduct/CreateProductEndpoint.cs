@@ -1,4 +1,5 @@
 ﻿using Entity = VerticalSliceFastEndpoints.Entities.Product;
+
 namespace Features.Product.CreateProduct;
 
 public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequestDto, CreateProductResponseDto, Entity>
@@ -52,9 +53,10 @@ public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequestDto
     public override Entity MapToEntity(CreateProductRequestDto req)
     {
         // Standard ASP.NET Core approach
-        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        //string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-        return new Entity(req.Title, req.Description, createdByUserId: userId);
+        //return new Entity(req.Title, req.Description, createdByUserId: userId);
+        return new Entity(req.Title, req.Description);
     }
     
     public override CreateProductResponseDto MapFromEntity(Entity entity)
