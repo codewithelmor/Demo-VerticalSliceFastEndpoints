@@ -4,6 +4,9 @@
     {
         public void Configure(EntityTypeBuilder<Product> builder)
         {
+            // Soft delete
+            builder.HasQueryFilter(o => !o.IsDeleted);
+
             // Set the primary key
             builder.HasKey(p => p.Id);
 
