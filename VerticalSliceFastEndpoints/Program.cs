@@ -24,8 +24,8 @@ builder.Services.AddCors(options =>
                 "https://myfrontend.com",
                 "https://admin.myfrontend.com"
             )
-            .WithMethods("GET", "POST")
-            .WithHeaders("Content-Type", "Authorization");
+            .WithMethods(HttpMethods.Get, HttpMethods.Post)
+            .WithHeaders(HeaderNames.ContentType, HeaderNames.Authorization);
     });
 });
 
@@ -155,14 +155,14 @@ app
 
             if (wantsXml)
             {
-                rsp.ContentType = "application/xml";
+                rsp.ContentType = MediaTypeNames.Application.Xml;
                 var serializer = new XmlSerializer(dto!.GetType());
                 using var ms = new MemoryStream();
                 serializer.Serialize(ms, dto);
                 return rsp.Body.WriteAsync(ms.ToArray(), ct).AsTask();
             }
 
-            rsp.ContentType = "application/json";
+            rsp.ContentType = MediaTypeNames.Application.Json;
             return JsonSerializer.SerializeAsync(rsp.Body, dto, dto!.GetType(), jsonOptions, ct);
         };
     });
