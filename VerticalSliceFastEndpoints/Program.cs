@@ -74,13 +74,13 @@ builder.Services.AddAuthentication(options =>
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(apiSettings["Secret"]!)),
+                Encoding.UTF8.GetBytes(apiSettings[nameof(JwtSettings.Secret)]!)),
 
             ValidateIssuer = true,
-            ValidIssuer = apiSettings["Issuer"],
+            ValidIssuer = apiSettings[nameof(JwtSettings.Issuer)],
 
             ValidateAudience = true,
-            ValidAudience = apiSettings["Audience"],
+            ValidAudience = apiSettings[nameof(JwtSettings.Audience)],
 
             ValidateLifetime = true,
             ClockSkew = TimeSpan.FromMinutes(1)
