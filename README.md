@@ -22,9 +22,19 @@ The API includes JWT-based authentication and role-based authorization (via ASP.
 ```text
 VerticalSliceFastEndpoints/
 ├── VerticalSliceFastEndpoints
+│   ├── Core
+│   │   └── Interfaces
+│   │       ├── IAuditableEntity.cs
+│   │       ├── ICurrentUserService.cs
+│   │       ├── IImageUploadableEntity.cs
+│   │       ├── IJwtTokenService.cs
+│   │       └── ISoftDeletable.cs
 │   ├── Data
 │   │   ├── Configurations
-│   │   │   └── ProductConfiguration.cs
+│   │   │   └── ProductConfiguration .cs
+│   │   ├── Custom
+│   │   │   ├── ApplicationDbContext.Custom.cs
+│   │   │   └── Product.Custom.cs
 │   │   └── ApplicationDbContext.cs
 │   ├── Entities
 │   │   ├── ApplicationUser.cs
@@ -32,7 +42,7 @@ VerticalSliceFastEndpoints/
 │   ├── Features
 │   │   ├── Auth
 │   │   │   ├── Login
-│   │   │   │   ├── LoginEndpoint.cs
+│   │   │   │   ├── LoginEndpoint .cs
 │   │   │   │   ├── LoginRequestDto.cs
 │   │   │   │   ├── LoginResponseDto.cs
 │   │   │   │   └── LoginValidation.cs
@@ -79,7 +89,10 @@ VerticalSliceFastEndpoints/
 │   │   │       ├── GetUsersResponseDto.cs
 │   │   │       ├── GetUsersValidation.cs
 │   │   │       └── UserItemResponseDto.cs
-│   │   └── TestEndpoint.cs
+│   │   └── TestEndpoint .cs
+│   ├── Infrastructure
+│   │   ├── CurrentUserService.cs
+│   │   └── JwtTokenService .cs
 │   ├── Migrations
 │   │   ├── 20260903092129_InitialCreate.cs
 │   │   ├── 20260903092129_InitialCreate.Designer.cs
@@ -89,9 +102,14 @@ VerticalSliceFastEndpoints/
 │   │   ├── 20260904102330_LinkProductToUser.Designer.cs
 │   │   ├── 20260904110845_ImageUploadToProduct.cs
 │   │   ├── 20260904110845_ImageUploadToProduct.Designer.cs
+│   │   ├── 20261002075515_UpdatedProductSchema1.cs
+│   │   ├── 20261002075515_UpdatedProductSchema1.Designer.cs
 │   │   └── ApplicationDbContextModelSnapshot.cs
+│   ├── Options
+│   │   ├── CorsCompanySettings.cs
+│   │   └── JwtSettings.cs
 │   ├── PreProcessors
-│   │   ├── AcceptHeaderValidator.cs
+│   │   ├── AcceptHeaderValidator .cs
 │   │   └── PreProcessorLogging.cs
 │   ├── Properties
 │   │   └── launchSettings.json
@@ -103,6 +121,7 @@ VerticalSliceFastEndpoints/
 │   └── VerticalSliceFastEndpoints.csproj
 ├── .gitignore
 ├── global.json
+├── README.md
 └── VerticalSliceFastEndpoints.slnx
 ```
 
