@@ -7,6 +7,6 @@
         public string Email { get; set; } = default!;
         public string Password { get; set; } = default!; // NOTE: For demo only - NOT encrypted
 
-        public string Role { get; set; } = SD.Role_Customer;
+        public string Role { get; set; } = ApplicationRole.Customer;
     }
 }

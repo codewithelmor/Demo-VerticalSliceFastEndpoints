@@ -45,7 +45,7 @@
             }
 
             var roles = await _userManager.GetRolesAsync(user);
-            var role = roles.FirstOrDefault() ?? "Customer"; // Fallback to your SD.Role_Customer string
+            var role = roles.FirstOrDefault() ?? "Customer"; // Fallback to your Role.Customer string
 
             // Create JWT Token
             var key = Encoding.ASCII.GetBytes(_configuration["ApiSettings:Secret"]!);

@@ -27,6 +27,7 @@ global using System.Text;
 global using System.Text.Json;
 global using System.Xml.Serialization;
 global using VerticalSliceFastEndpoints;
+global using VerticalSliceFastEndpoints.Core.Constants;
 global using VerticalSliceFastEndpoints.Core.Interfaces;
 global using VerticalSliceFastEndpoints.Data;
 global using VerticalSliceFastEndpoints.Entities;

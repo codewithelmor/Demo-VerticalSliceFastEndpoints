@@ -37,11 +37,11 @@
             }
 
             // Seed roles dynamically if they don't exist
-            if (!await _roleManager.RoleExistsAsync(SD.Role_Admin))
-            {
-                await _roleManager.CreateAsync(new IdentityRole(SD.Role_Admin));
-                await _roleManager.CreateAsync(new IdentityRole(SD.Role_Customer));
-            }
+            //if (!await _roleManager.RoleExistsAsync(Role.Admin))
+            //{
+            //    await _roleManager.CreateAsync(new IdentityRole(Role.Admin));
+            //    await _roleManager.CreateAsync(new IdentityRole(Role.Customer));
+            //}
 
             var newUser = new ApplicationUser
             {
@@ -62,13 +62,13 @@
             }
 
             // Handle Role Assignment
-            if (string.Equals(req.Role, SD.Role_Admin, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(req.Role, ApplicationRole.Admin, StringComparison.OrdinalIgnoreCase))
             {
-                await _userManager.AddToRoleAsync(newUser, SD.Role_Admin);
+                await _userManager.AddToRoleAsync(newUser, ApplicationRole.Admin);
             }
             else
             {
-                await _userManager.AddToRoleAsync(newUser, SD.Role_Customer);
+                await _userManager.AddToRoleAsync(newUser, ApplicationRole.Customer);
             }
 
             await Send.OkAsync(new RegisterResponseDto

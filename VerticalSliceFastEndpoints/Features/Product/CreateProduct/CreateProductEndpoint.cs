@@ -23,7 +23,7 @@ public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequestDto
         // AuthSchemes("Bearer"); // Optional: Use only if you have multiple schemas configured
 
         // 2. Enforce Role Authorization
-        Roles(SD.Role_Admin); // Add the specific roles allowed to access this slice
+        Roles(ApplicationRole.Admin); // Add the specific roles allowed to access this slice
 
         Throttle(hitLimit: 20, durationSeconds: 60);
 
