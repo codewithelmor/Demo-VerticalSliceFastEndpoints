@@ -18,6 +18,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddDatabaseInitializer(builder.Configuration);
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -153,6 +155,9 @@ builder.Services.OpenApiDocument(options =>
 });
 
 var app = builder.Build();
+
+if (await app.InitializeDatabaseAsync())
+    return; // migration job mode: exit once the database is ready
 
 app
     .UseResponseCaching()
