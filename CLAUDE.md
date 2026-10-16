@@ -1,0 +1,37 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Overview
+
+.NET 10 Web API (SDK pinned in `global.json`) using FastEndpoints with Vertical Slice Architecture, ASP.NET Core Identity + JWT, EF Core (SQL Server), and Scalar/OpenAPI docs. There are no tests in the repo. The single project lives in `VerticalSliceFastEndpoints/` (solution: `VerticalSliceFastEndpoints.slnx`).
+
+## Commands
+
+Run from the repo root or `VerticalSliceFastEndpoints/`:
+
+```bash
+dotnet build
+dotnet run --project VerticalSliceFastEndpoints          # Scalar UI at the app root / OpenAPI route
+dotnet ef migrations add <Name> --project VerticalSliceFastEndpoints
+dotnet ef database update --project VerticalSliceFastEndpoints
+```
+
+Prerequisites: SQL Server, a connection string at `ConnectionStrings:DefaultConnection`, and a JWT config section (`JwtSettings`: `Secret`, `Issuer`, `Audience`) — see `appsettings*.json`.
+
+## Architecture
+
+**Feature slices** live in `Features/<Area>/<FeatureName>/` with `*Endpoint.cs`, `*RequestDto.cs`, `*ResponseDto.cs`, `*Validation.cs` (FluentValidation `Validator<T>`). Endpoints configure route, `Version(n)`, roles (`ApplicationRole` constants), throttling and OpenAPI description in `Configure()`, and logic in `HandleAsync()`. Endpoints that map entities use `EndpointWithMapping<TReq, TRes, TEntity>`. Add the `PreProcessorLogging<TReq>` pre-processor per endpoint as existing slices do. Note some file names contain a stray space before the extension (e.g. `LoginEndpoint .cs`, `JwtTokenService .cs`) — preserve/account for this when globbing.
+
+**Program.cs wiring (non-obvious parts):**
+- Routes are `/api/v{version}/...`: `RoutePrefix = "api"`, `Versioning.Prefix = "v"`, `PrependToRoute = true`. Two OpenAPI documents (`v1`, `v2`) are split by `MinEndpointVersion`/`MaxEndpointVersion`; a new API version needs a new `OpenApiDocument` and a matching Scalar `AddDocument`.
+- JSON + XML content negotiation is hand-rolled via `Serializer.RequestDeserializer`/`ResponseSerializer`. DTOs must be XmlSerializer-friendly (public parameterless constructor; `[XmlRoot]`/`[XmlElement]` only when a schema requires it — see README). A global `AcceptHeaderValidator` pre-processor returns 406 for unsupported `Accept` values.
+- CORS: `AllowAll`, one policy per entry in the `CorsCompanySettings` config list (named after the company), and a combined `RestrictedPolicy`.
+- `GlobalUsings.cs` holds nearly all namespaces — new files usually need no `using`s.
+
+**Data layer:**
+- `ApplicationDbContext` is a `partial` class split with `Data/Custom/ApplicationDbContext.Custom.cs`, which overrides `SaveChanges*` to apply audit stamps (`IAuditableEntity`: Created*/Updated* with the user id from `ICurrentUserService`, falling back to `"System"`) and converts deletes of `ISoftDeletable` entities into soft-delete updates. `Entities/Product.cs` is likewise partial with `Data/Custom/Product.Custom.cs` (navigation properties). Don't hard-delete or set audit fields manually.
+- Migrations are in `Migrations/`. Startup DB initialization (`Data/Initialization/`) is driven by the `DatabaseInitializer` config section: `Migrate`, `Seed`, `ExitAfterInitialization` (migration-job mode that exits before serving). Enabled in `appsettings.Development.json`; keep `Migrate` off in production.
+- Dapper is referenced for raw queries where EF is unsuitable.
+
+**Auth:** `IJwtTokenService`/`JwtTokenService` issue tokens at login; JWT bearer validation is set up in `Program.cs`; roles are constants in `Core/Constants/ApplicationRole.cs`, claim names in `JwtClaimTypes.cs`.
