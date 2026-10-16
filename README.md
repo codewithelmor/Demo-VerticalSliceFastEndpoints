@@ -23,6 +23,9 @@ The API includes JWT-based authentication and role-based authorization (via ASP.
 VerticalSliceFastEndpoints/
 ├── VerticalSliceFastEndpoints
 │   ├── Core
+│   │   ├── Constants
+│   │   │   ├── ApplicationRole.cs
+│   │   │   └── JwtClaimTypes.cs
 │   │   └── Interfaces
 │   │       ├── IAuditableEntity.cs
 │   │       ├── ICurrentUserService.cs
@@ -35,6 +38,10 @@ VerticalSliceFastEndpoints/
 │   │   ├── Custom
 │   │   │   ├── ApplicationDbContext.Custom.cs
 │   │   │   └── Product.Custom.cs
+│   │   ├── Initialization
+│   │   │   ├── ApplicationDbContextInitializer.cs
+│   │   │   ├── DatabaseInitializerExtensions.cs
+│   │   │   └── IDatabaseInitializer.cs
 │   │   └── ApplicationDbContext.cs
 │   ├── Entities
 │   │   ├── ApplicationUser.cs
@@ -107,6 +114,7 @@ VerticalSliceFastEndpoints/
 │   │   └── ApplicationDbContextModelSnapshot.cs
 │   ├── Options
 │   │   ├── CorsCompanySettings.cs
+│   │   ├── DatabaseInitializerOptions.cs
 │   │   └── JwtSettings.cs
 │   ├── PreProcessors
 │   │   ├── AcceptHeaderValidator .cs
@@ -117,7 +125,6 @@ VerticalSliceFastEndpoints/
 │   ├── appsettings.json
 │   ├── GlobalUsings.cs
 │   ├── Program.cs
-│   ├── SD.cs
 │   └── VerticalSliceFastEndpoints.csproj
 ├── .gitignore
 ├── global.json
@@ -134,7 +141,7 @@ VerticalSliceFastEndpoints/
 | `Features/` | One folder per feature slice, grouped by aggregate (`Auth`, `Product`, `Users`) — each slice owns its endpoint, request, response, and validator |
 | `Migrations/` | EF Core migration history |
 | `PreProcessors/` | FastEndpoints pre-processors shared across endpoints (request logging, `Accept` header validation) |
-| `SD.cs` | Static/shared definitions, e.g. role name constants (`SD.Role_Admin`) |
+| `ApplicationRole.cs` | Static/shared definitions, e.g. role name constants (`ApplicationRole.Admin`) |
 
 ## Feature Slice Anatomy
 
@@ -190,7 +197,7 @@ public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequest, C
         PreProcessor<PreProcessorLogging<CreateProductRequest>>();
         Post("/products");
         Version(1);
-        Roles(SD.Role_Admin);
+        Roles(ApplicationRole.Admin);
         Throttle(hitLimit: 20, durationSeconds: 60);
 
         Description(x => x
@@ -222,7 +229,7 @@ public class CreateProductEndpoint : EndpointWithMapping<CreateProductRequest, C
 ```
 
 Key things this slice demonstrates:
-- **Role-based authorization** via `Roles(SD.Role_Admin)`.
+- **Role-based authorization** via `Roles(ApplicationRole.Admin)`.
 - **API versioning** via `Version(1)`.
 - **Rate limiting** via `Throttle(hitLimit, durationSeconds)`.
 - **Pre-processors** for cross-cutting concerns like logging, applied per-endpoint.

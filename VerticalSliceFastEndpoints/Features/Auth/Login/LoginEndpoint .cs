@@ -4,16 +4,16 @@
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IConfiguration _configuration;
+        private readonly JwtSettings _jwtSettings;
 
         public LoginEndpoint(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IConfiguration configuration)
+            IOptionsMonitor<JwtSettings> jwtSettings)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _configuration = configuration;
+            _jwtSettings = jwtSettings.CurrentValue;
         }
 
         public override void Configure()
@@ -48,16 +48,18 @@
             var role = roles.FirstOrDefault() ?? "Customer"; // Fallback to your Role.Customer string
 
             // Create JWT Token
-            var key = Encoding.ASCII.GetBytes(_configuration["ApiSettings:Secret"]!);
+            var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Role, role),
-                new Claim("API", "Product API v1")
-            }),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id),
+                    new Claim(ClaimTypes.Role, role),
+                    new Claim(JwtClaimTypes.Audience, _jwtSettings.Audience),
+                    new Claim(JwtClaimTypes.Issuer, _jwtSettings.Issuer),
+                    new Claim("API", "Product API v1")
+                }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
