@@ -21,6 +21,40 @@ The API includes JWT-based authentication and role-based authorization (via ASP.
 
 ```text
 VerticalSliceFastEndpoints/
+├── .claude
+│   ├── commands
+│   │   └── commit.md
+│   ├── skills
+│   │   ├── ef-database-update
+│   │   │   ├── references
+│   │   │   │   └── troubleshooting.md
+│   │   │   ├── scripts
+│   │   │   │   └── ef_tool.py
+│   │   │   └── SKILL.md
+│   │   ├── ef-migration-add
+│   │   │   ├── references
+│   │   │   │   └── troubleshooting.md
+│   │   │   ├── scripts
+│   │   │   │   └── ef_tool.py
+│   │   │   └── SKILL.md
+│   │   ├── ef-migration-remove
+│   │   │   ├── references
+│   │   │   │   └── troubleshooting.md
+│   │   │   ├── scripts
+│   │   │   │   └── ef_tool.py
+│   │   │   └── SKILL.md
+│   │   ├── ef-scaffold
+│   │   │   ├── references
+│   │   │   │   └── troubleshooting.md
+│   │   │   ├── scripts
+│   │   │   │   └── ef_tool.py
+│   │   │   └── SKILL.md
+│   │   └── move-usings-to-global
+│   │       ├── move_usings_to_global.py
+│   │       └── SKILL.md
+│   └── settings.json
+├── scripts
+│   └── update_readme_tree.py
 ├── VerticalSliceFastEndpoints
 │   ├── Core
 │   │   ├── Constants
@@ -34,7 +68,7 @@ VerticalSliceFastEndpoints/
 │   │       └── ISoftDeletable.cs
 │   ├── Data
 │   │   ├── Configurations
-│   │   │   └── ProductConfiguration .cs
+│   │   │   └── ProductConfiguration.cs
 │   │   ├── Custom
 │   │   │   ├── ApplicationDbContext.Custom.cs
 │   │   │   └── Product.Custom.cs
@@ -49,7 +83,7 @@ VerticalSliceFastEndpoints/
 │   ├── Features
 │   │   ├── Auth
 │   │   │   ├── Login
-│   │   │   │   ├── LoginEndpoint .cs
+│   │   │   │   ├── LoginEndpoint.cs
 │   │   │   │   ├── LoginRequestDto.cs
 │   │   │   │   ├── LoginResponseDto.cs
 │   │   │   │   └── LoginValidation.cs
@@ -96,10 +130,10 @@ VerticalSliceFastEndpoints/
 │   │   │       ├── GetUsersResponseDto.cs
 │   │   │       ├── GetUsersValidation.cs
 │   │   │       └── UserItemResponseDto.cs
-│   │   └── TestEndpoint .cs
+│   │   └── TestEndpoint.cs
 │   ├── Infrastructure
 │   │   ├── CurrentUserService.cs
-│   │   └── JwtTokenService .cs
+│   │   └── JwtTokenService.cs
 │   ├── Migrations
 │   │   ├── 20260903092129_InitialCreate.cs
 │   │   ├── 20260903092129_InitialCreate.Designer.cs
@@ -117,7 +151,7 @@ VerticalSliceFastEndpoints/
 │   │   ├── DatabaseInitializerOptions.cs
 │   │   └── JwtSettings.cs
 │   ├── PreProcessors
-│   │   ├── AcceptHeaderValidator .cs
+│   │   ├── AcceptHeaderValidator.cs
 │   │   └── PreProcessorLogging.cs
 │   ├── Properties
 │   │   └── launchSettings.json
@@ -127,6 +161,7 @@ VerticalSliceFastEndpoints/
 │   ├── Program.cs
 │   └── VerticalSliceFastEndpoints.csproj
 ├── .gitignore
+├── CLAUDE.md
 ├── global.json
 ├── README.md
 └── VerticalSliceFastEndpoints.slnx
