@@ -81,7 +81,10 @@ VerticalSliceFastEndpoints/
 │   │       └── SKILL.md
 │   └── settings.json
 ├── docs
-│   └── data-layer.md
+│   ├── api-configuration.md
+│   ├── authentication.md
+│   ├── data-layer.md
+│   └── features.md
 ├── scripts
 │   └── update_readme_tree.py
 ├── VerticalSliceFastEndpoints
