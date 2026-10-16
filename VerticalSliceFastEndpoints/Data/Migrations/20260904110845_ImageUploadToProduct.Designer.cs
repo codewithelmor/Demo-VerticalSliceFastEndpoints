@@ -9,11 +9,11 @@ using VerticalSliceFastEndpoints.Data;
 
 #nullable disable
 
-namespace VerticalSliceFastEndpoints.Migrations
+namespace VerticalSliceFastEndpoints.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260903103558_AddedIdentitySchema")]
-    partial class AddedIdentitySchema
+    [Migration("20260904110845_ImageUploadToProduct")]
+    partial class ImageUploadToProduct
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -229,8 +229,15 @@ namespace VerticalSliceFastEndpoints.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedByUserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("datetime2");
@@ -240,15 +247,39 @@ namespace VerticalSliceFastEndpoints.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<byte[]>("ImageContent")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("ImageFileName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ImageUploadedByUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("ImageUploadedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("UpdatedByUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("DeletedByUserId");
+
+                    b.HasIndex("ImageUploadedByUserId");
+
+                    b.HasIndex("UpdatedByUserId");
 
                     b.ToTable("Products");
                 });
@@ -302,6 +333,38 @@ namespace VerticalSliceFastEndpoints.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("VerticalSliceFastEndpoints.Entities.Product", b =>
+                {
+                    b.HasOne("VerticalSliceFastEndpoints.Entities.ApplicationUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("VerticalSliceFastEndpoints.Entities.ApplicationUser", "DeletedByUser")
+                        .WithMany()
+                        .HasForeignKey("DeletedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("VerticalSliceFastEndpoints.Entities.ApplicationUser", "ImageUploadedByUser")
+                        .WithMany()
+                        .HasForeignKey("ImageUploadedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("VerticalSliceFastEndpoints.Entities.ApplicationUser", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("DeletedByUser");
+
+                    b.Navigation("ImageUploadedByUser");
+
+                    b.Navigation("UpdatedByUser");
                 });
 #pragma warning restore 612, 618
         }

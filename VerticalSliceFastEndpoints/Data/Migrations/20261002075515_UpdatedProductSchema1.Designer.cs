@@ -9,11 +9,11 @@ using VerticalSliceFastEndpoints.Data;
 
 #nullable disable
 
-namespace VerticalSliceFastEndpoints.Migrations
+namespace VerticalSliceFastEndpoints.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260904110845_ImageUploadToProduct")]
-    partial class ImageUploadToProduct
+    [Migration("20261002075515_UpdatedProductSchema1")]
+    partial class UpdatedProductSchema1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -259,6 +259,9 @@ namespace VerticalSliceFastEndpoints.Migrations
 
                     b.Property<DateTime?>("ImageUploadedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Title")
                         .IsRequired()

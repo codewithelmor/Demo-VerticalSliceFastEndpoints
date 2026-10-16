@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace VerticalSliceFastEndpoints.Migrations
+namespace VerticalSliceFastEndpoints.Data.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

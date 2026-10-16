@@ -9,7 +9,7 @@ using VerticalSliceFastEndpoints.Data;
 
 #nullable disable
 
-namespace VerticalSliceFastEndpoints.Migrations
+namespace VerticalSliceFastEndpoints.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260903092129_InitialCreate")]

@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace VerticalSliceFastEndpoints.Migrations
+namespace VerticalSliceFastEndpoints.Data.Migrations
 {
     /// <inheritdoc />
     public partial class UpdatedProductSchema1 : Migration

@@ -22,8 +22,11 @@ The API includes JWT-based authentication and role-based authorization (via ASP.
 ```text
 VerticalSliceFastEndpoints/
 ├── .claude
+│   ├── agents
+│   │   └── docs-reference-updater.md
 │   ├── commands
-│   │   └── commit.md
+│   │   ├── commit.md
+│   │   └── create-docs.md
 │   ├── skills
 │   │   ├── ef-database-update
 │   │   │   ├── references
@@ -49,10 +52,36 @@ VerticalSliceFastEndpoints/
 │   │   │   ├── scripts
 │   │   │   │   └── ef_tool.py
 │   │   │   └── SKILL.md
-│   │   └── move-usings-to-global
-│   │       ├── move_usings_to_global.py
+│   │   ├── move-usings-to-global
+│   │   │   ├── move_usings_to_global.py
+│   │   │   └── SKILL.md
+│   │   └── skill-creator
+│   │       ├── agents
+│   │       │   ├── analyzer.md
+│   │       │   ├── comparator.md
+│   │       │   └── grader.md
+│   │       ├── assets
+│   │       │   └── eval_review.html
+│   │       ├── eval-viewer
+│   │       │   ├── generate_review.py
+│   │       │   └── viewer.html
+│   │       ├── references
+│   │       │   └── schemas.md
+│   │       ├── scripts
+│   │       │   ├── __init__.py
+│   │       │   ├── aggregate_benchmark.py
+│   │       │   ├── generate_report.py
+│   │       │   ├── improve_description.py
+│   │       │   ├── package_skill.py
+│   │       │   ├── quick_validate.py
+│   │       │   ├── run_eval.py
+│   │       │   ├── run_loop.py
+│   │       │   └── utils.py
+│   │       ├── LICENSE.txt
 │   │       └── SKILL.md
 │   └── settings.json
+├── docs
+│   └── data-layer.md
 ├── scripts
 │   └── update_readme_tree.py
 ├── VerticalSliceFastEndpoints
@@ -76,6 +105,18 @@ VerticalSliceFastEndpoints/
 │   │   │   ├── ApplicationDbContextInitializer.cs
 │   │   │   ├── DatabaseInitializerExtensions.cs
 │   │   │   └── IDatabaseInitializer.cs
+│   │   ├── Migrations
+│   │   │   ├── 20260903092129_InitialCreate.cs
+│   │   │   ├── 20260903092129_InitialCreate.Designer.cs
+│   │   │   ├── 20260903103558_AddedIdentitySchema.cs
+│   │   │   ├── 20260903103558_AddedIdentitySchema.Designer.cs
+│   │   │   ├── 20260904102330_LinkProductToUser.cs
+│   │   │   ├── 20260904102330_LinkProductToUser.Designer.cs
+│   │   │   ├── 20260904110845_ImageUploadToProduct.cs
+│   │   │   ├── 20260904110845_ImageUploadToProduct.Designer.cs
+│   │   │   ├── 20261002075515_UpdatedProductSchema1.cs
+│   │   │   ├── 20261002075515_UpdatedProductSchema1.Designer.cs
+│   │   │   └── ApplicationDbContextModelSnapshot.cs
 │   │   └── ApplicationDbContext.cs
 │   ├── Entities
 │   │   ├── ApplicationUser.cs
@@ -134,18 +175,6 @@ VerticalSliceFastEndpoints/
 │   ├── Infrastructure
 │   │   ├── CurrentUserService.cs
 │   │   └── JwtTokenService.cs
-│   ├── Migrations
-│   │   ├── 20260903092129_InitialCreate.cs
-│   │   ├── 20260903092129_InitialCreate.Designer.cs
-│   │   ├── 20260903103558_AddedIdentitySchema.cs
-│   │   ├── 20260903103558_AddedIdentitySchema.Designer.cs
-│   │   ├── 20260904102330_LinkProductToUser.cs
-│   │   ├── 20260904102330_LinkProductToUser.Designer.cs
-│   │   ├── 20260904110845_ImageUploadToProduct.cs
-│   │   ├── 20260904110845_ImageUploadToProduct.Designer.cs
-│   │   ├── 20261002075515_UpdatedProductSchema1.cs
-│   │   ├── 20261002075515_UpdatedProductSchema1.Designer.cs
-│   │   └── ApplicationDbContextModelSnapshot.cs
 │   ├── Options
 │   │   ├── CorsCompanySettings.cs
 │   │   ├── DatabaseInitializerOptions.cs
@@ -164,6 +193,7 @@ VerticalSliceFastEndpoints/
 ├── CLAUDE.md
 ├── global.json
 ├── README.md
+├── skills-lock.json
 └── VerticalSliceFastEndpoints.slnx
 ```
 
@@ -171,10 +201,9 @@ VerticalSliceFastEndpoints/
 
 | Folder | Purpose |
 |---|---|
-| `Data/` | `ApplicationDbContext` and EF Core entity configurations |
+| `Data/` | `ApplicationDbContext`, entity configurations, partial-class customizations, startup initialization and EF Core `Migrations/` |
 | `Entities/` | Domain/EF Core entities (`ApplicationUser`, `Product`) |
 | `Features/` | One folder per feature slice, grouped by aggregate (`Auth`, `Product`, `Users`) — each slice owns its endpoint, request, response, and validator |
-| `Migrations/` | EF Core migration history |
 | `PreProcessors/` | FastEndpoints pre-processors shared across endpoints (request logging, `Accept` header validation) |
 | `ApplicationRole.cs` | Static/shared definitions, e.g. role name constants (`ApplicationRole.Admin`) |
 
