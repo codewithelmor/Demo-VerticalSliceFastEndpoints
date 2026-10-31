@@ -4,6 +4,12 @@ A .NET 10 Web API built with [FastEndpoints](https://fast-endpoints.com/) using 
 
 The API includes JWT-based authentication and role-based authorization (via ASP.NET Core Identity), EF Core with SQL Server, request/response versioning, and interactive API docs powered by Scalar + OpenAPI.
 
+## Demo Video
+
+[Watch the demo on Loom](https://www.loom.com/share/264cb52a18484491af956ac36a1bd999)
+
+A narrated walkthrough (about 8 min 30 s) of the API running locally with demo data. It covers the technology stack, the vertical slice architecture (feature folders, the `CreateProduct` endpoint and validator, `Program.cs` wiring, audit stamps and soft delete), and setup from scratch (build, migrations, database seeding). It then calls the live API in Scalar: register and login with a JWT, a 401 without a token and a 201 with one, validation errors, JSON and XML content negotiation with a 406 for unsupported `Accept` values, and a soft delete confirmed in SQL. The last part shows the AI-assisted development workflow used in this repo (`CLAUDE.md`, the `/docs` conventions, `.claude` agents, skills and commands, and the Stop hook that keeps this README tree up to date). The code, config and terminal scenes replay real repo files and captured command output. The repo has no automated tests yet, and the v2 OpenAPI document has no endpoints yet. The voice is AI-generated.
+
 ## Tech Stack
 
 - **.NET 10** / ASP.NET Core Web API
@@ -80,7 +86,167 @@ VerticalSliceFastEndpoints/
 │   │       ├── LICENSE.txt
 │   │       └── SKILL.md
 │   └── settings.json
+├── .ruff_cache
+│   ├── 0.17.3
+│   │   ├── 5931543009099340094
+│   │   └── 8037888979631608305
+│   ├── .gitignore
+│   └── CACHEDIR.TAG
 ├── docs
+│   ├── product
+│   │   └── 10-launch
+│   │       ├── demo
+│   │       │   ├── audio
+│   │       │   │   ├── _hashes.json
+│   │       │   │   ├── durations.json
+│   │       │   │   ├── s01.wav
+│   │       │   │   ├── s02.wav
+│   │       │   │   ├── s03.wav
+│   │       │   │   ├── s04.wav
+│   │       │   │   ├── s05.wav
+│   │       │   │   ├── s06.wav
+│   │       │   │   ├── s07.wav
+│   │       │   │   ├── s08.wav
+│   │       │   │   ├── s09.wav
+│   │       │   │   ├── s10.wav
+│   │       │   │   ├── s11.wav
+│   │       │   │   ├── s12.wav
+│   │       │   │   ├── s13.wav
+│   │       │   │   ├── s14.wav
+│   │       │   │   ├── s15.wav
+│   │       │   │   ├── s16.wav
+│   │       │   │   ├── s17.wav
+│   │       │   │   ├── s18.wav
+│   │       │   │   ├── s19.wav
+│   │       │   │   ├── s20.wav
+│   │       │   │   ├── s21.wav
+│   │       │   │   ├── s22.wav
+│   │       │   │   ├── s23.wav
+│   │       │   │   ├── s24.wav
+│   │       │   │   ├── s25.wav
+│   │       │   │   ├── s26.wav
+│   │       │   │   └── s27.wav
+│   │       │   ├── automation
+│   │       │   │   ├── assemble.py
+│   │       │   │   ├── build_script_md.py
+│   │       │   │   ├── j3-scalar-api.mjs
+│   │       │   │   ├── make_vertical.py
+│   │       │   │   ├── make_voiceover.py
+│   │       │   │   ├── package-lock.json
+│   │       │   │   ├── package.json
+│   │       │   │   ├── pw-demo-helpers.mjs
+│   │       │   │   ├── record-viewer.mjs
+│   │       │   │   ├── render-card.mjs
+│   │       │   │   ├── reset-demo.ps1
+│   │       │   │   ├── screenshots.mjs
+│   │       │   │   └── viewer-page.js
+│   │       │   ├── captions
+│   │       │   │   ├── vertical-slice-api-demo-vertical.srt
+│   │       │   │   ├── vertical-slice-api-demo.srt
+│   │       │   │   └── vertical-slice-api-demo.vtt
+│   │       │   ├── exports
+│   │       │   │   ├── qc-frames
+│   │       │   │   │   ├── sheet-001.png
+│   │       │   │   │   ├── sheet-002.png
+│   │       │   │   │   ├── sheet-003.png
+│   │       │   │   │   ├── sheet-004.png
+│   │       │   │   │   ├── sheet-005.png
+│   │       │   │   │   ├── sheet-006.png
+│   │       │   │   │   ├── sheet-007.png
+│   │       │   │   │   ├── sheet-008.png
+│   │       │   │   │   ├── sheet-009.png
+│   │       │   │   │   ├── sheet-010.png
+│   │       │   │   │   ├── sheet-011.png
+│   │       │   │   │   ├── sheet-012.png
+│   │       │   │   │   ├── sheet-013.png
+│   │       │   │   │   ├── sheet-014.png
+│   │       │   │   │   ├── sheet-015.png
+│   │       │   │   │   └── sheet-016.png
+│   │       │   │   ├── chapters.txt
+│   │       │   │   └── timeline.json
+│   │       │   ├── recordings
+│   │       │   │   ├── j3-scalar
+│   │       │   │   │   ├── markers.json
+│   │       │   │   │   └── raw.webm
+│   │       │   │   ├── viewer-A
+│   │       │   │   │   ├── markers.json
+│   │       │   │   │   └── raw.webm
+│   │       │   │   └── viewer-B
+│   │       │   │       ├── markers.json
+│   │       │   │       ├── page@7ed9b00846f03f3b3991671c87b6de3c.webm
+│   │       │   │       └── raw.webm
+│   │       │   ├── thumbnail
+│   │       │   │   ├── screenshots
+│   │       │   │   │   ├── scalar-home.png
+│   │       │   │   │   └── scalar-xml.png
+│   │       │   │   ├── alt-text.md
+│   │       │   │   ├── thumbnail.jpg
+│   │       │   │   ├── thumbnail.png
+│   │       │   │   └── title.png
+│   │       │   ├── work
+│   │       │   │   ├── captures
+│   │       │   │   │   ├── build.txt
+│   │       │   │   │   ├── build_raw.txt
+│   │       │   │   │   ├── build_view.txt
+│   │       │   │   │   ├── run.txt
+│   │       │   │   │   ├── sql.txt
+│   │       │   │   │   └── ver.txt
+│   │       │   │   ├── failures
+│   │       │   │   │   ├── step-11.png
+│   │       │   │   │   ├── step-31.png
+│   │       │   │   │   └── step-41.png
+│   │       │   │   ├── sheets
+│   │       │   │   │   ├── cut3.png
+│   │       │   │   │   ├── j3.png
+│   │       │   │   │   ├── m1.png
+│   │       │   │   │   ├── m2.png
+│   │       │   │   │   ├── m3.png
+│   │       │   │   │   ├── m4.png
+│   │       │   │   │   ├── m5.png
+│   │       │   │   │   ├── m6.png
+│   │       │   │   │   ├── m7.png
+│   │       │   │   │   ├── m8.png
+│   │       │   │   │   ├── mont.png
+│   │       │   │   │   ├── qc_280.png
+│   │       │   │   │   ├── qc_299.png
+│   │       │   │   │   ├── vA_110.png
+│   │       │   │   │   ├── vA_170.png
+│   │       │   │   │   ├── vA_200.png
+│   │       │   │   │   ├── vA_215.png
+│   │       │   │   │   ├── vA_5.png
+│   │       │   │   │   ├── vA_50.png
+│   │       │   │   │   ├── vA_70.png
+│   │       │   │   │   ├── vert.png
+│   │       │   │   │   ├── vert2.png
+│   │       │   │   │   └── vert3.png
+│   │       │   │   ├── app-run.err
+│   │       │   │   ├── j3-created-id.txt
+│   │       │   │   ├── probe1.png
+│   │       │   │   ├── probe10.png
+│   │       │   │   ├── probe11.png
+│   │       │   │   ├── probe2.png
+│   │       │   │   ├── probe3.png
+│   │       │   │   ├── probe4.png
+│   │       │   │   ├── probe5.png
+│   │       │   │   ├── probe6.png
+│   │       │   │   ├── probe7.png
+│   │       │   │   ├── probe8.png
+│   │       │   │   ├── probe9.png
+│   │       │   │   ├── qc-auto.md
+│   │       │   │   ├── vcut.json
+│   │       │   │   ├── viewerA.err
+│   │       │   │   └── viewerB.err
+│   │       │   ├── demo-plan.md
+│   │       │   ├── edit.json
+│   │       │   ├── feature-map.md
+│   │       │   ├── journeys.md
+│   │       │   ├── qc-report.md
+│   │       │   ├── scenes-captions.json
+│   │       │   ├── scenes.json
+│   │       │   ├── scenes.py
+│   │       │   └── script.md
+│   │       └── marketing
+│   │           └── legal-check.md
 │   ├── api-configuration.md
 │   ├── authentication.md
 │   ├── data-layer.md

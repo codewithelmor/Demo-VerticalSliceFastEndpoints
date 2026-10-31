@@ -1,0 +1,112 @@
+{
+  "scenes": [
+    {
+      "id": "s01",
+      "voiceover": "Hi, I'm Elmor. This is a .NET 10 web API I built around one idea: keep every feature small, separate, and easy to find. I'll show how it's built, how to run it from scratch, and how AI tooling fits into the workflow."
+    },
+    {
+      "id": "s02",
+      "voiceover": "Here's the stack. .NET 10 and ASP.NET Core. FastEndpoints instead of controllers. FluentValidation for requests. ASP.NET Core Identity with JWT bearer tokens. Entity Framework Core on SQL Server, plus Dapper for one raw query. And Scalar for the API docs."
+    },
+    {
+      "id": "s03",
+      "voiceover": "The architecture is vertical slices. Instead of folders for controllers, services, and repositories, each feature gets its own folder. Under Features there's Auth, Product, and Users. Each slice holds its endpoint, request, response, and validator."
+    },
+    {
+      "id": "s04",
+      "voiceover": "Here's the create product slice. In Configure, the endpoint declares everything about itself. The route, the API version, the Admin role, a limit of 20 requests a minute, and its OpenAPI description. HandleAsync maps the request, saves through the DbContext, and returns a 201."
+    },
+    {
+      "id": "s05",
+      "voiceover": "Validation sits right next to it. A FluentValidation class says the title is required, and can't pass 50 characters. If a request breaks a rule, the handler never runs."
+    },
+    {
+      "id": "s06",
+      "voiceover": "Program.cs wires the shared pieces. Identity, the SQL Server context, JWT validation, CORS policies, and FastEndpoints. Routes get an api prefix and a version prefix, so you get paths like /api/v1/products. Two OpenAPI documents, split by version, feed Scalar. And a custom serializer adds XML next to JSON."
+    },
+    {
+      "id": "s07",
+      "voiceover": "The data layer handles audit and soft delete in one place. On save, the DbContext stamps created and updated dates with the current user's ID. And if you delete a soft-deletable entity, it turns the delete into an update that marks it deleted. Endpoints never do this by hand."
+    },
+    {
+      "id": "s08",
+      "voiceover": "For one read, I used Dapper instead of EF Core. The users list is a paged raw SQL query, joined to roles, and mapped straight into DTOs."
+    },
+    {
+      "id": "s09",
+      "voiceover": "Now, setup from scratch. You need the .NET 10 SDK, pinned in global.json, and a SQL Server. I'm using SQL Server LocalDB. The build passes. It does print a few warnings, including a vulnerable transitive package, and I'll come back to that at the end."
+    },
+    {
+      "id": "s10",
+      "voiceover": "Next, configuration. The connection string lives in appsettings.json. The JWT section is called ApiSettings, with a secret, an issuer, and an audience. I've masked the secret on screen. The development file turns on the database initializer, with Migrate and Seed both set to true. In production you'd keep Migrate off."
+    },
+    {
+      "id": "s11",
+      "voiceover": "For this demo I point the app at a fresh database with an environment variable. Then, dotnet run. On startup, the initializer finds 5 pending migrations, applies them to the empty database, and seeds the Admin and Customer roles. FastEndpoints registers 11 endpoints, and the app is listening."
+    },
+    {
+      "id": "s12",
+      "voiceover": "Now the live API. This is Scalar, running against the app on localhost. Version 1 has the auth, products, and users endpoints. Switch to version 2, and the document is empty. The wiring is there, but there are no version 2 endpoints yet."
+    },
+    {
+      "id": "s13",
+      "voiceover": "First, register an admin. The request is plain JSON, and the response says success."
+    },
+    {
+      "id": "s14",
+      "voiceover": "Bad input gets rejected. A bad email and a short password return a 400, with one message for each broken rule."
+    },
+    {
+      "id": "s15",
+      "voiceover": "Now log in. The response includes a JWT, which I'm blurring on screen. It carries the user's ID and the Admin role, plus an issuer and an audience, and it expires in seven days."
+    },
+    {
+      "id": "s16",
+      "voiceover": "Without a token, creating a product returns 401. I set the bearer token in Scalar, and send it again. Now it's a 201, with the new product's ID."
+    },
+    {
+      "id": "s17",
+      "voiceover": "An empty title returns a 400, with the validator's messages. The slice's rules run before the handler does."
+    },
+    {
+      "id": "s18",
+      "voiceover": "Now, content negotiation. By default the list comes back as JSON. Change the Accept header to application/xml, and the same endpoint returns XML. Ask for text/csv, and it returns 406, Not Acceptable."
+    },
+    {
+      "id": "s19",
+      "voiceover": "Last call before deleting, the users list. That's the Dapper query, returning the admin I registered, with the Admin role."
+    },
+    {
+      "id": "s20",
+      "voiceover": "Now delete the product. The API returns 204."
+    },
+    {
+      "id": "s21",
+      "voiceover": "But the row isn't gone. A quick query shows it's still in the table, flagged as deleted, with who created it, and when."
+    },
+    {
+      "id": "s22",
+      "voiceover": "Now, how AI-assisted development fits in. The repo has a CLAUDE.md file for Claude Code. It states the stack, the commands, the architecture, and the non-obvious rules. For example, don't hard-delete, and don't set audit fields by hand."
+    },
+    {
+      "id": "s23",
+      "voiceover": "It also tells the assistant to read the docs folder before generating code. There are four short convention docs: features, API configuration, authentication, and the data layer. So generated code starts from written conventions that a reviewer can check against."
+    },
+    {
+      "id": "s24",
+      "voiceover": "The .claude folder holds the tooling. A docs-reference-updater agent keeps CLAUDE.md's doc list current. A create-docs command scaffolds a new convention doc. A commit command writes Conventional Commit messages, and asks before it commits. And skills cover EF Core migrations, database updates, and moving usings to global usings. Plus skill-creator, for building more."
+    },
+    {
+      "id": "s25",
+      "voiceover": "One more. A Stop hook in settings.json runs a Python script after each response. It regenerates the project structure tree in the README, so the docs don't drift."
+    },
+    {
+      "id": "s26",
+      "voiceover": "Two honest notes. The repo has no automated tests yet, and AI tooling doesn't change that. That's the next thing I'd add. And the build flags a vulnerable transitive package, which I still need to update."
+    },
+    {
+      "id": "s27",
+      "voiceover": "If you're hiring engineers who use AI tools with discipline, written conventions, repeatable commands, and a habit of checking the results, I'd like to talk. The code is on GitHub. Thanks for watching."
+    }
+  ]
+}

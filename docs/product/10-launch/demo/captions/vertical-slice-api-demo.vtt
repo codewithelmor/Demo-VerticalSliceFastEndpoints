@@ -1,0 +1,421 @@
+WEBVTT
+
+00:00:04.811 --> 00:00:05.790
+Hi, I'm Elmor.
+
+00:00:05.840 --> 00:00:11.375
+This is a .NET 10 web API I built around
+one idea: keep every feature small,
+
+00:00:11.425 --> 00:00:13.359
+separate, and easy to find.
+
+00:00:13.409 --> 00:00:19.385
+I'll show how it's built, how to run it
+from scratch, and how AI tooling fits into
+
+00:00:19.435 --> 00:00:20.435
+the workflow.
+
+00:00:22.595 --> 00:00:24.018
+Here's the stack.
+
+00:00:24.068 --> 00:00:26.183
+.NET 10 and ASP.NET Core.
+
+00:00:26.233 --> 00:00:29.388
+FastEndpoints instead of controllers.
+
+00:00:29.438 --> 00:00:31.987
+FluentValidation for requests.
+
+00:00:32.037 --> 00:00:35.885
+ASP.NET Core Identity with JWT bearer
+tokens.
+
+00:00:35.935 --> 00:00:41.689
+Entity Framework Core on SQL Server, plus
+Dapper for one raw query.
+
+00:00:41.739 --> 00:00:44.165
+And Scalar for the API docs.
+
+00:00:46.377 --> 00:00:48.895
+The architecture is vertical slices.
+
+00:00:48.945 --> 00:00:54.318
+Instead of folders for controllers,
+services, and repositories, each feature
+
+00:00:54.368 --> 00:00:55.744
+gets its own folder.
+
+00:00:55.794 --> 00:00:59.169
+Under Features there's Auth, Product, and
+Users.
+
+00:00:59.219 --> 00:01:03.785
+Each slice holds its endpoint, request,
+response, and validator.
+
+00:01:06.002 --> 00:01:08.283
+Here's the create product slice.
+
+00:01:08.333 --> 00:01:12.653
+In Configure, the endpoint declares
+everything about itself.
+
+00:01:12.703 --> 00:01:18.480
+The route, the API version, the Admin
+role, a limit of 20 requests a minute, and
+
+00:01:18.530 --> 00:01:20.228
+its OpenAPI description.
+
+00:01:20.278 --> 00:01:25.886
+HandleAsync maps the request, saves
+through the DbContext, and returns a 201.
+
+00:01:28.095 --> 00:01:30.290
+Validation sits right next to it.
+
+00:01:30.340 --> 00:01:35.868
+A FluentValidation class says the title is
+required, and can't pass 50 characters.
+
+00:01:35.918 --> 00:01:39.387
+If a request breaks a rule, the handler
+never runs.
+
+00:01:41.603 --> 00:01:44.787
+Program.cs wires the shared pieces.
+
+00:01:44.837 --> 00:01:51.069
+Identity, the SQL Server context, JWT
+validation, CORS policies, and
+
+00:01:51.119 --> 00:01:52.362
+FastEndpoints.
+
+00:01:52.412 --> 00:01:58.645
+Routes get an api prefix and a version
+prefix, so you get paths like
+
+00:01:58.695 --> 00:02:00.216
+/api/v1/products.
+
+00:02:00.266 --> 00:02:05.112
+Two OpenAPI documents, split by version,
+feed Scalar.
+
+00:02:05.162 --> 00:02:09.412
+And a custom serializer adds XML next to
+JSON.
+
+00:02:11.629 --> 00:02:15.527
+The data layer handles audit and soft
+delete in one place.
+
+00:02:15.577 --> 00:02:21.176
+On save, the DbContext stamps created and
+updated dates with the current user's ID.
+
+00:02:21.226 --> 00:02:26.758
+And if you delete a soft-deletable entity,
+it turns the delete into an update that
+
+00:02:26.808 --> 00:02:27.915
+marks it deleted.
+
+00:02:27.965 --> 00:02:30.143
+Endpoints never do this by hand.
+
+00:02:32.346 --> 00:02:35.746
+For one read, I used Dapper instead of EF
+Core.
+
+00:02:35.796 --> 00:02:41.766
+The users list is a paged raw SQL query,
+joined to roles, and mapped straight into
+
+00:02:41.816 --> 00:02:42.816
+DTOs.
+
+00:02:44.397 --> 00:02:46.160
+Now, setup from scratch.
+
+00:02:46.210 --> 00:02:51.147
+You need the .NET 10 SDK, pinned in
+global.json, and a SQL Server.
+
+00:02:51.197 --> 00:02:53.338
+I'm using SQL Server LocalDB.
+
+00:02:53.388 --> 00:02:54.622
+The build passes.
+
+00:02:54.672 --> 00:03:00.742
+It does print a few warnings, including a
+vulnerable transitive package, and I'll
+
+00:03:00.792 --> 00:03:02.983
+come back to that at the end.
+
+00:03:05.189 --> 00:03:06.598
+Next, configuration.
+
+00:03:06.648 --> 00:03:10.101
+The connection string lives in
+appsettings.json.
+
+00:03:10.151 --> 00:03:16.012
+The JWT section is called ApiSettings,
+with a secret, an issuer, and an audience.
+
+00:03:16.062 --> 00:03:18.420
+I've masked the secret on screen.
+
+00:03:18.470 --> 00:03:24.403
+The development file turns on the database
+initializer, with Migrate and Seed both
+
+00:03:24.453 --> 00:03:25.403
+set to true.
+
+00:03:25.453 --> 00:03:28.153
+In production you'd keep Migrate off.
+
+00:03:30.244 --> 00:03:35.641
+For this demo I point the app at a fresh
+database with an environment variable.
+
+00:03:35.691 --> 00:03:36.814
+Then, dotnet run.
+
+00:03:36.864 --> 00:03:41.985
+On startup, the initializer finds 5
+pending migrations, applies them to the
+
+00:03:42.035 --> 00:03:45.778
+empty database, and seeds the Admin and
+Customer roles.
+
+00:03:45.828 --> 00:03:50.172
+FastEndpoints registers 11 endpoints, and
+the app is listening.
+
+00:03:54.089 --> 00:03:55.276
+Now the live API.
+
+00:03:55.326 --> 00:03:59.134
+This is Scalar, running against the app on
+localhost.
+
+00:03:59.184 --> 00:04:03.065
+Version 1 has the auth, products, and
+users endpoints.
+
+00:04:03.115 --> 00:04:06.486
+Switch to version 2, and the document is
+empty.
+
+00:04:06.536 --> 00:04:11.049
+The wiring is there, but there are no
+version 2 endpoints yet.
+
+00:04:19.569 --> 00:04:21.316
+First, register an admin.
+
+00:04:21.366 --> 00:04:25.462
+The request is plain JSON, and the
+response says success.
+
+00:04:28.639 --> 00:04:30.410
+Bad input gets rejected.
+
+00:04:30.460 --> 00:04:36.404
+A bad email and a short password return a
+400, with one message for each broken
+
+00:04:36.454 --> 00:04:37.454
+rule.
+
+00:04:44.958 --> 00:04:45.908
+Now log in.
+
+00:04:45.958 --> 00:04:50.269
+The response includes a JWT, which I'm
+blurring on screen.
+
+00:04:50.319 --> 00:04:56.283
+It carries the user's ID and the Admin
+role, plus an issuer and an audience, and
+
+00:04:56.333 --> 00:04:58.213
+it expires in seven days.
+
+00:05:07.848 --> 00:05:11.321
+Without a token, creating a product
+returns 401.
+
+00:05:11.371 --> 00:05:15.137
+I set the bearer token in Scalar, and send
+it again.
+
+00:05:15.187 --> 00:05:18.269
+Now it's a 201, with the new product's ID.
+
+00:05:21.425 --> 00:05:25.434
+An empty title returns a 400, with the
+validator's messages.
+
+00:05:25.484 --> 00:05:28.596
+The slice's rules run before the handler
+does.
+
+00:05:35.560 --> 00:05:37.675
+Now, content negotiation.
+
+00:05:37.725 --> 00:05:41.052
+By default the list comes back as JSON.
+
+00:05:41.102 --> 00:05:46.768
+Change the Accept header to
+application/xml, and the same endpoint
+
+00:05:46.818 --> 00:05:47.807
+returns XML.
+
+00:05:47.857 --> 00:05:52.447
+Ask for text/csv, and it returns 406, Not
+Acceptable.
+
+00:05:59.432 --> 00:06:02.091
+Last call before deleting, the users list.
+
+00:06:02.141 --> 00:06:07.237
+That's the Dapper query, returning the
+admin I registered, with the Admin role.
+
+00:06:16.096 --> 00:06:18.051
+Now delete the product.
+
+00:06:18.101 --> 00:06:19.845
+The API returns 204.
+
+00:06:22.488 --> 00:06:23.908
+But the row isn't gone.
+
+00:06:23.958 --> 00:06:28.572
+A quick query shows it's still in the
+table, flagged as deleted, with who
+
+00:06:28.622 --> 00:06:29.964
+created it, and when.
+
+00:06:32.178 --> 00:06:34.967
+Now, how AI-assisted development fits in.
+
+00:06:35.017 --> 00:06:38.152
+The repo has a CLAUDE.md file for Claude
+Code.
+
+00:06:38.202 --> 00:06:43.621
+It states the stack, the commands, the
+architecture, and the non-obvious rules.
+
+00:06:43.671 --> 00:06:48.310
+For example, don't hard-delete, and don't
+set audit fields by hand.
+
+00:06:50.518 --> 00:06:55.242
+It also tells the assistant to read the
+docs folder before generating code.
+
+00:06:55.292 --> 00:06:59.444
+There are four short convention docs:
+features, API configuration,
+
+00:06:59.494 --> 00:07:01.672
+authentication, and the data layer.
+
+00:07:01.722 --> 00:07:06.446
+So generated code starts from written
+conventions that a reviewer can check
+
+00:07:06.496 --> 00:07:07.496
+against.
+
+00:07:09.207 --> 00:07:11.771
+The .claude folder holds the tooling.
+
+00:07:11.821 --> 00:07:16.433
+A docs-reference-updater agent keeps
+CLAUDE.md's doc list current.
+
+00:07:16.483 --> 00:07:20.177
+A create-docs command scaffolds a new
+convention doc.
+
+00:07:20.227 --> 00:07:25.263
+A commit command writes Conventional
+Commit messages, and asks before it
+
+00:07:25.313 --> 00:07:26.263
+commits.
+
+00:07:26.313 --> 00:07:31.561
+And skills cover EF Core migrations,
+database updates, and moving usings to
+
+00:07:31.611 --> 00:07:32.561
+global usings.
+
+00:07:32.611 --> 00:07:35.295
+Plus skill-creator, for building more.
+
+00:07:37.064 --> 00:07:38.014
+One more.
+
+00:07:38.064 --> 00:07:42.746
+A Stop hook in settings.json runs a Python
+script after each response.
+
+00:07:42.796 --> 00:07:48.272
+It regenerates the project structure tree
+in the README, so the docs don't drift.
+
+00:07:50.082 --> 00:07:51.118
+Two honest notes.
+
+00:07:51.168 --> 00:07:55.720
+The repo has no automated tests yet, and
+AI tooling doesn't change that.
+
+00:07:55.770 --> 00:07:57.637
+That's the next thing I'd add.
+
+00:07:57.687 --> 00:08:02.366
+And the build flags a vulnerable
+transitive package, which I still need to
+
+00:08:02.416 --> 00:08:03.416
+update.
+
+00:08:05.078 --> 00:08:09.246
+If you're hiring engineers who use AI
+tools with discipline, written
+
+00:08:09.296 --> 00:08:14.333
+conventions, repeatable commands, and a
+habit of checking the results, I'd like to
+
+00:08:14.383 --> 00:08:15.333
+talk.
+
+00:08:15.383 --> 00:08:16.697
+The code is on GitHub.
+
+00:08:16.747 --> 00:08:17.988
+Thanks for watching.
+

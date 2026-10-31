@@ -1,0 +1,45 @@
+1
+00:00:00,500 --> 00:00:03,973
+Without a token, creating a product
+returns 401.
+
+2
+00:00:04,023 --> 00:00:07,789
+I set the bearer token in Scalar, and send
+it again.
+
+3
+00:00:07,839 --> 00:00:10,921
+Now it's a 201, with the new product's ID.
+
+4
+00:00:14,077 --> 00:00:18,086
+An empty title returns a 400, with the
+validator's messages.
+
+5
+00:00:18,136 --> 00:00:21,248
+The slice's rules run before the handler
+does.
+
+6
+00:00:28,212 --> 00:00:30,327
+Now, content negotiation.
+
+7
+00:00:30,377 --> 00:00:33,704
+By default the list comes back as JSON.
+
+8
+00:00:33,754 --> 00:00:39,420
+Change the Accept header to
+application/xml, and the same endpoint
+
+9
+00:00:39,470 --> 00:00:40,459
+returns XML.
+
+10
+00:00:40,509 --> 00:00:45,099
+Ask for text/csv, and it returns 406, Not
+Acceptable.

@@ -1,0 +1,20 @@
+// Real screenshots of the running demo app (Scalar) for cards and thumbnail.
+import { chromium } from 'playwright';
+const OUT = new URL('../thumbnail/screenshots/', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1920, height: 1080 } });
+await p.goto('http://localhost:5156/scalar'); await p.waitForTimeout(2500);
+await p.getByRole('button', { name: 'Open Group - Products' }).click();
+await p.waitForTimeout(500);
+await p.screenshot({ path: OUT + 'scalar-home.png' });
+await p.locator('a').filter({ hasText: /^\s*\/api\/v1\/productsHTTP Method:\s*GET\s*$/i }).first().click();
+await p.getByRole('button', { name: /Test Request.*\(get \/api\/v1\/products\)/ }).first().click();
+await p.waitForTimeout(800);
+const m = p.getByRole('dialog');
+await m.getByLabel('Include accept in request').uncheck({ force: true });
+const ed = m.locator('.code-input-lite__editor');
+await ed.nth(2).click(); await p.keyboard.insertText('Accept');
+await ed.nth(3).click(); await p.keyboard.insertText('application/xml'); await p.waitForTimeout(1200);
+await m.locator('button.scalar-button-solid:visible', { hasText: 'Send' }).first().click();
+await p.waitForTimeout(1500);
+await p.screenshot({ path: OUT + 'scalar-xml.png' });
+await b.close(); console.log('shots ok');

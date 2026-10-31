@@ -1,0 +1,23 @@
+{
+  "name": "vertical-slice-api-demo",
+  "size": "1920x1080",
+  "fps": 30,
+  "segments": [
+    { "video": "recordings/viewer-A/raw.webm", "markers": "recordings/viewer-A/markers.json", "trimStart": 0 },
+    { "video": "recordings/j3-scalar/raw.webm", "markers": "recordings/j3-scalar/markers.json", "trimStart": 0 },
+    { "video": "recordings/viewer-B/raw.webm", "markers": "recordings/viewer-B/markers.json", "trimStart": 0 }
+  ],
+  "audioDir": "audio",
+  "voiceLead": 0.3,
+  "titleCard": "thumbnail/title.png",
+  "titleSeconds": 4,
+  "chapters": [
+    { "title": "Technology stack", "scene": "s02" },
+    { "title": "Architecture: vertical slices", "scene": "s03" },
+    { "title": "Setup from scratch", "scene": "s09" },
+    { "title": "Live API in Scalar", "scene": "s12" },
+    { "title": "AI-assisted development", "scene": "s22" },
+    { "title": "Call to action", "scene": "s27" }
+  ],
+  "exportsDir": "exports"
+}
